@@ -1,0 +1,21 @@
+from .category.routes import router as category_router
+from .content.routes import router as content_router
+from .manufacturer.routes import router as manufacturer_router
+from .order.routes import router as order_router
+from .pickpoint.routes import router as pickpoint_router
+from .price.routes import router as price_router
+from .product.routes import router as product_router
+from .production.routes import router as production_router
+from .warehouse.routes import router as warehouse_router
+from fastapi import APIRouter
+
+router = APIRouter()
+router.include_router(category_router)
+router.include_router(content_router)
+router.include_router(manufacturer_router)
+router.include_router(order_router)
+router.include_router(pickpoint_router)
+router.include_router(price_router)
+router.include_router(product_router)
+router.include_router(production_router)
+router.include_router(warehouse_router)
