@@ -1,6 +1,7 @@
 from app_logger import logger
 from config import DB_HOST, DB_NAME, DB_USER, DB_PASSWORD, IMAGE_PATH, IMAGE_NAME_LENGTH
-from fastapi import APIRouter, Request, status, HTTPException
+from .models import Product
+from fastapi import APIRouter, status, HTTPException
 from fastapi.responses import JSONResponse
 import pymysql.cursors
 import string
@@ -28,9 +29,8 @@ def image_processing(json_image, product_category):
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def add_product(request: Request):
+async def add_product(product: Product):
     try:
-        payload = await request.json()
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
                                      password=DB_PASSWORD,
@@ -39,18 +39,19 @@ async def add_product(request: Request):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = 'INSERT INTO `products` (`NAME`,`AVAILABLE`,`CATEGORY_ID`,`COMMENT`,`AUTHOR_ID`,`IMAGE_PATH`) VALUES (%s,%s,%s,%s,%s,%s)'
-                    product_name = payload.get('name') if payload.get('name') else 'Безымянный продукт'
-                    product_available = payload.get('available') if payload.get('available') else 0
-                    product_category = payload.get('category_id') if payload.get('category_id') else 1
-                    product_comment = payload.get('comment') if payload.get('comment') else ''
-                    product_author = payload.get('author_id') if payload.get('author_id') else 1
-                    product_image_path = image_processing(payload.get('image', ''), product_category)
-                    cursor.execute(sql, (product_name,
-                                         product_available,
-                                         product_category,
-                                         product_comment,
-                                         product_author,
+                    sql = """INSERT INTO `products` (`NAME`,
+                                                     `AVAILABLE`,
+                                                     `CATEGORY_ID`,
+                                                     `COMMENT`,
+                                                     `AUTHOR_ID`,
+                                                     `IMAGE_PATH`) 
+                            VALUES (%s,%s,%s,%s,%s,%s)"""
+                    product_image_path = image_processing(product.image_path, product.category_id)
+                    cursor.execute(sql, (product.name,
+                                         product.available,
+                                         product.category_id,
+                                         product.comment,
+                                         product.author_id,
                                          product_image_path))
                 except Exception as err:
                     err_message = ''
@@ -70,9 +71,8 @@ async def add_product(request: Request):
 
 
 @router.patch("/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def update_product(request: Request, product_id: int):
+async def update_product(product: Product, product_id: int):
     try:
-        payload = await request.json()
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
                                      password=DB_PASSWORD,
@@ -85,20 +85,21 @@ async def update_product(request: Request, product_id: int):
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     if len(result) > 0:
-                        product_name = payload.get('name') if payload.get('name') else 'Безымянный продукт'
-                        product_available = payload.get('available') if payload.get('available') else 0
-                        product_category = payload.get('category_id') if payload.get('category_id') else 1
-                        product_comment = payload.get('comment') if payload.get('comment') else ''
-                        product_author = payload.get('author_id') if payload.get('author_id') else 1
-                        product_image_path = image_processing(payload.get('image', ''), product_category)
-                        sql = "UPDATE `products` SET `NAME`='{0}',`AVAILABLE`='{1}',`CATEGORY_ID`={2},`COMMENT`='{3}',`AUTHOR_ID`='{4}',`IMAGE_PATH`='{5}' WHERE `ID`={6}".format(
-                                                                                                        product_name,
-                                                                                                        product_available,
-                                                                                                        product_category,
-                                                                                                        product_comment,
-                                                                                                        product_author,
-                                                                                                        product_image_path,
-                                                                                                        product_id)
+                        product_image_path = image_processing(product.image_path, product.category_id)
+                        sql = """UPDATE `products` 
+                                 SET `NAME`='{0}',
+                                     `AVAILABLE`='{1}',
+                                     `CATEGORY_ID`={2},
+                                     `COMMENT`='{3}',
+                                     `AUTHOR_ID`='{4}',
+                                     `IMAGE_PATH`='{5}' 
+                                 WHERE `ID`={6}""".format(product.name,
+                                                            product.available,
+                                                            product.category_id,
+                                                            product.comment,
+                                                            product.author_id,
+                                                            product_image_path,
+                                                            product_id)
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
@@ -131,11 +132,11 @@ async def delete_product(product_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = "SELECT `ID` FROM `products` WHERE `ID`={0}".format(product_id)
+                    sql = 'SELECT `ID` FROM `products` WHERE `ID`={0}'.format(product_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     if len(result) > 0:
-                        sql = "DELETE FROM `products` WHERE `ID`={0}".format(product_id)
+                        sql = 'DELETE FROM `products` WHERE `ID`={0}'.format(product_id)
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
@@ -157,7 +158,7 @@ async def delete_product(product_id: int):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)} {err_message}')
 
 
-@router.get("/", status_code=status.HTTP_200_OK)
+@router.get("/", status_code=status.HTTP_200_OK)        #, response_model=Product
 async def get_products():
     try:
         connection = pymysql.connect(host=DB_HOST,
@@ -168,7 +169,7 @@ async def get_products():
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = "SELECT * FROM `products`"
+                    sql = 'SELECT * FROM `products`'
                     cursor.execute(sql)
                     result = cursor.fetchall()
                 except Exception as err:
@@ -187,7 +188,7 @@ async def get_products():
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)} {err_message}')
 
 
-@router.get("/{product_id}", status_code=status.HTTP_200_OK)
+@router.get("/{product_id}", status_code=status.HTTP_200_OK)    #, response_model=Product
 async def get_product(product_id: int):
     try:
         connection = pymysql.connect(host=DB_HOST,
@@ -198,7 +199,7 @@ async def get_product(product_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = "SELECT * FROM `products` WHERE `ID`={0}".format(product_id)
+                    sql = 'SELECT * FROM `products` WHERE `ID`={0}'.format(product_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     if len(result) > 0:

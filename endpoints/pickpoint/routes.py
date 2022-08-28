@@ -1,6 +1,7 @@
 from app_logger import logger
 from config import DB_HOST, DB_NAME, DB_USER, DB_PASSWORD
-from fastapi import APIRouter, Request, status, HTTPException
+from .models import Pickpoint
+from fastapi import APIRouter, status, HTTPException
 from fastapi.responses import JSONResponse
 import pymysql.cursors
 
@@ -13,9 +14,8 @@ router = APIRouter(
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def add_pickpoint(request: Request):
+async def add_pickpoint(pickpoint: Pickpoint):
     try:
-        payload = await request.json()
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
                                      password=DB_PASSWORD,
@@ -24,17 +24,17 @@ async def add_pickpoint(request: Request):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = 'INSERT INTO `pickpoints` (`ADDRESS`,`WORKHOURS`,`COMMENT`,`ACTIVE`,`AUTHOR_ID`) VALUES (%s,%s,%s,%s,%s)'
-                    pickpoint_address = payload.get('address') if payload.get('address') else ''
-                    pickpoint_workhours = payload.get('workhours') if payload.get('workhours') else ''
-                    pickpoint_comment = payload.get('comment') if payload.get('comment') else ''
-                    pickpoint_active = payload.get('active') if payload.get('active') else 0
-                    pickpoint_author = payload.get('author_id') if payload.get('author_id') else 1
-                    cursor.execute(sql, (pickpoint_address,
-                                         pickpoint_workhours,
-                                         pickpoint_comment,
-                                         pickpoint_active,
-                                         pickpoint_author
+                    sql = """INSERT INTO `pickpoints` (`ADDRESS`,
+                                                       `WORKHOURS`,
+                                                       `COMMENT`,
+                                                       `ACTIVE`,
+                                                       `AUTHOR_ID`) 
+                             VALUES (%s,%s,%s,%s,%s)"""
+                    cursor.execute(sql, (pickpoint.address,
+                                         pickpoint.workhours,
+                                         pickpoint.comment,
+                                         pickpoint.available,
+                                         pickpoint.author_id
                                          ))
                 except Exception as err:
                     err_message = ''
@@ -54,9 +54,8 @@ async def add_pickpoint(request: Request):
 
 
 @router.patch("/{pickpoint_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def update_pickpoint(request: Request, pickpoint_id: int):
+async def update_pickpoint(pickpoint: Pickpoint, pickpoint_id: int):
     try:
-        payload = await request.json()
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
                                      password=DB_PASSWORD,
@@ -69,18 +68,18 @@ async def update_pickpoint(request: Request, pickpoint_id: int):
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     if len(result) > 0:
-                        pickpoint_address = payload.get('address') if payload.get('address') else ''
-                        pickpoint_workhours = payload.get('workhours') if payload.get('workhours') else ''
-                        pickpoint_comment = payload.get('comment') if payload.get('comment') else ''
-                        pickpoint_active = payload.get('active') if payload.get('active') else 0
-                        pickpoint_author = payload.get('author_id') if payload.get('author_id') else 1
-                        sql = "UPDATE `pickpoints` SET `ADDRESS`='{0}',`WORKHOURS`='{1}',`COMMENT`='{2}',`ACTIVE`='{3}',`AUTHOR_ID`='{4}' WHERE `ID`={5}".format(
-                                                                                                        pickpoint_address,
-                                                                                                        pickpoint_workhours,
-                                                                                                        pickpoint_comment,
-                                                                                                        pickpoint_active,
-                                                                                                        pickpoint_author,
-                                                                                                        pickpoint_id)
+                        sql = """UPDATE `pickpoints` 
+                                 SET `ADDRESS`='{0}',
+                                     `WORKHOURS`='{1}',
+                                     `COMMENT`='{2}',
+                                     `ACTIVE`='{3}',
+                                     `AUTHOR_ID`='{4}' 
+                                 WHERE `ID`={5}""".format(pickpoint.address,
+                                                            pickpoint.workhours,
+                                                            pickpoint.comment,
+                                                            pickpoint.available,
+                                                            pickpoint.author_id,
+                                                            pickpoint_id)
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
@@ -113,11 +112,11 @@ async def delete_pickpoint(pickpoint_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = "SELECT `ID` FROM `pickpoints` WHERE `ID`={0}".format(pickpoint_id)
+                    sql = 'SELECT `ID` FROM `pickpoints` WHERE `ID`={0}'.format(pickpoint_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     if len(result) > 0:
-                        sql = "DELETE FROM `pickpoints` WHERE `ID`={0}".format(pickpoint_id)
+                        sql = 'DELETE FROM `pickpoints` WHERE `ID`={0}'.format(pickpoint_id)
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
@@ -139,7 +138,7 @@ async def delete_pickpoint(pickpoint_id: int):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)} {err_message}')
 
 
-@router.get("/", status_code=status.HTTP_200_OK)
+@router.get("/", status_code=status.HTTP_200_OK)        #, response_model=Pickpoint
 async def get_pickpoints():
     try:
         connection = pymysql.connect(host=DB_HOST,
@@ -150,7 +149,7 @@ async def get_pickpoints():
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = "SELECT * FROM `pickpoints`"
+                    sql = 'SELECT * FROM `pickpoints`'
                     cursor.execute(sql)
                     result = cursor.fetchall()
                 except Exception as err:
@@ -169,7 +168,7 @@ async def get_pickpoints():
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)} {err_message}')
 
 
-@router.get("/{pickpoint_id}", status_code=status.HTTP_200_OK)
+@router.get("/{pickpoint_id}", status_code=status.HTTP_200_OK)      #, response_model=Pickpoint
 async def get_pickpoint(pickpoint_id: int):
     try:
         connection = pymysql.connect(host=DB_HOST,
@@ -180,7 +179,7 @@ async def get_pickpoint(pickpoint_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = "SELECT * FROM `pickpoints` WHERE `ID`={0}".format(pickpoint_id)
+                    sql = 'SELECT * FROM `pickpoints` WHERE `ID`={0}'.format(pickpoint_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     if len(result) > 0:

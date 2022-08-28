@@ -1,6 +1,7 @@
 from app_logger import logger
 from config import DB_HOST, DB_NAME, DB_USER, DB_PASSWORD
-from fastapi import APIRouter, Request, status, HTTPException
+from .models import Warehouse
+from fastapi import APIRouter, status, HTTPException
 from fastapi.responses import JSONResponse
 import pymysql.cursors
 
@@ -13,9 +14,8 @@ router = APIRouter(
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def add_warehouse(request: Request):
+async def add_warehouse(warehouse: Warehouse):
     try:
-        payload = await request.json()
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
                                      password=DB_PASSWORD,
@@ -25,14 +25,10 @@ async def add_warehouse(request: Request):
             with connection.cursor() as cursor:
                 try:
                     sql = 'INSERT INTO `warehouses` (`PRODUCT_ID`,`AMOUNT`,`RESERVE`,`AUTHOR_ID`) VALUES (%s,%s,%s,%s)'
-                    warehouse_product_id = payload.get('product_id') if payload.get('product_id') else 1
-                    warehouse_amount = payload.get('amount') if payload.get('amount') else 0
-                    warehouse_reserve = payload.get('reserve') if payload.get('reserve') else 0
-                    warehouse_author = payload.get('author_id') if payload.get('author_id') else 1
-                    cursor.execute(sql, (warehouse_product_id,
-                                         warehouse_amount,
-                                         warehouse_reserve,
-                                         warehouse_author
+                    cursor.execute(sql, (warehouse.product_id,
+                                         warehouse.amount,
+                                         warehouse.reserve,
+                                         warehouse.author_id
                                          ))
                 except Exception as err:
                     err_message = ''
@@ -52,9 +48,8 @@ async def add_warehouse(request: Request):
 
 
 @router.patch("/{warehouse_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def update_warehouse(request: Request, warehouse_id: int):
+async def update_warehouse(warehouse: Warehouse, warehouse_id: int):
     try:
-        payload = await request.json()
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
                                      password=DB_PASSWORD,
@@ -63,20 +58,20 @@ async def update_warehouse(request: Request, warehouse_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = "SELECT `ID` FROM `warehouses` WHERE `ID`={0}".format(warehouse_id)
+                    sql = 'SELECT `ID` FROM `warehouses` WHERE `ID`={0}'.format(warehouse_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     if len(result) > 0:
-                        warehouse_product_id = payload.get('product_id') if payload.get('product_id') else 1
-                        warehouse_amount = payload.get('amount') if payload.get('amount') else 0
-                        warehouse_reserve = payload.get('reserve') if payload.get('reserve') else 0
-                        warehouse_author = payload.get('author_id') if payload.get('author_id') else 1
-                        sql = "UPDATE `warehouses` SET `PRODUCT_ID`='{0}',`AMOUNT`='{1}',`RESERVE`='{2}',`AUTHOR_ID`='{3}' WHERE `ID`={4}".format(
-                                                                                                        warehouse_product_id,
-                                                                                                        warehouse_amount,
-                                                                                                        warehouse_reserve,
-                                                                                                        warehouse_author,
-                                                                                                        warehouse_id)
+                        sql = """UPDATE `warehouses` 
+                                 SET `PRODUCT_ID`='{0}',
+                                     `AMOUNT`='{1}',
+                                     `RESERVE`='{2}',
+                                     `AUTHOR_ID`='{3}' 
+                                 WHERE `ID`={4}""".format(warehouse.product_id,
+                                                            warehouse.amount,
+                                                            warehouse.reserve,
+                                                            warehouse.author_id,
+                                                            warehouse_id)
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
@@ -109,11 +104,11 @@ async def delete_warehouse(warehouse_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = "SELECT `ID` FROM `warehouses` WHERE `ID`={0}".format(warehouse_id)
+                    sql = 'SELECT `ID` FROM `warehouses` WHERE `ID`={0}'.format(warehouse_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     if len(result) > 0:
-                        sql = "DELETE FROM `warehouses` WHERE `ID`={0}".format(warehouse_id)
+                        sql = 'DELETE FROM `warehouses` WHERE `ID`={0}'.format(warehouse_id)
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
@@ -135,7 +130,7 @@ async def delete_warehouse(warehouse_id: int):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)} {err_message}')
 
 
-@router.get("/", status_code=status.HTTP_200_OK)
+@router.get("/", status_code=status.HTTP_200_OK)        #, response_model=Warehouse
 async def get_warehouses():
     try:
         connection = pymysql.connect(host=DB_HOST,
@@ -146,7 +141,7 @@ async def get_warehouses():
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = "SELECT * FROM `warehouses`"
+                    sql = 'SELECT * FROM `warehouses`'
                     cursor.execute(sql)
                     result = cursor.fetchall()
                 except Exception as err:
@@ -165,7 +160,7 @@ async def get_warehouses():
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)} {err_message}')
 
 
-@router.get("/{warehouse_id}", status_code=status.HTTP_200_OK)
+@router.get("/{warehouse_id}", status_code=status.HTTP_200_OK)      #, response_model=Warehouse
 async def get_warehouse(warehouse_id: int):
     try:
         connection = pymysql.connect(host=DB_HOST,
@@ -176,7 +171,7 @@ async def get_warehouse(warehouse_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = "SELECT * FROM `warehouses` WHERE `ID`={0}".format(warehouse_id)
+                    sql = 'SELECT * FROM `warehouses` WHERE `ID`={0}'.format(warehouse_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     if len(result) > 0:

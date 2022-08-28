@@ -1,9 +1,9 @@
 from app_logger import logger
 from config import DB_HOST, DB_NAME, DB_USER, DB_PASSWORD
-from fastapi import APIRouter, Request, status, HTTPException
+from .models import Order
+from fastapi import APIRouter, status, HTTPException
 from fastapi.responses import JSONResponse
 import pymysql.cursors
-import datetime
 
 
 router = APIRouter(
@@ -14,9 +14,8 @@ router = APIRouter(
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def add_order(request: Request):
+async def add_order(order: Order):
     try:
-        payload = await request.json()
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
                                      password=DB_PASSWORD,
@@ -25,19 +24,19 @@ async def add_order(request: Request):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = 'INSERT INTO `orders` (`COMMENT`,`ORDER_DATE`,`STATUS`,`DELIVERY_DATE`,`PAYMENT_TYPE`,`AUTHOR_ID`) VALUES (%s,%s,%s,%s,%s,%s)'
-                    order_comment = payload.get('comment') if payload.get('comment') else ''
-                    order_date = payload.get('date') if payload.get('date') else datetime.datetime.now()
-                    order_status = payload.get('status') if payload.get('status') else 'Неизвестен'
-                    order_delivery_date = payload.get('delivery_date') if payload.get('delivery_date') else datetime.datetime.now()
-                    order_payment_type = payload.get('payment_type') if payload.get('payment_type') else 'Наличными'
-                    order_author = payload.get('author_id') if payload.get('author_id') else 1
-                    cursor.execute(sql, (order_comment,
-                                         order_date,
-                                         order_status,
-                                         order_delivery_date,
-                                         order_payment_type,
-                                         order_author
+                    sql = """INSERT INTO `orders` (`COMMENT`,
+                                                   `ORDER_DATE`,
+                                                   `STATUS`,
+                                                   `DELIVERY_DATE`,
+                                                   `PAYMENT_TYPE`,
+                                                   `AUTHOR_ID`) 
+                             VALUES (%s,%s,%s,%s,%s,%s)"""
+                    cursor.execute(sql, (order.comment,
+                                         order.date,
+                                         order.status,
+                                         order.delivery_date,
+                                         order.payment_type,
+                                         order.author_id
                                          ))
                 except Exception as err:
                     err_message = ''
@@ -57,9 +56,8 @@ async def add_order(request: Request):
 
 
 @router.patch("/{order_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def update_order(request: Request, order_id: int):
+async def update_order(order: Order, order_id: int):
     try:
-        payload = await request.json()
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
                                      password=DB_PASSWORD,
@@ -72,20 +70,21 @@ async def update_order(request: Request, order_id: int):
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     if len(result) > 0:
-                        order_comment = payload.get('comment') if payload.get('comment') else ''
-                        order_date = payload.get('date') if payload.get('date') else datetime.datetime.now()
-                        order_status = payload.get('status') if payload.get('status') else 'Неизвестен'
-                        order_delivery_date = payload.get('delivery_date') if payload.get('delivery_date') else datetime.datetime.now()
-                        order_payment_type = payload.get('payment_type') if payload.get('payment_type') else 'Наличными'
-                        order_author = payload.get('author_id') if payload.get('author_id') else 1
-                        sql = "UPDATE `orders` SET `COMMENT`='{0}',`ORDER_DATE`='{1}',`STATUS`='{2}',`DELIVERY_DATE`='{3}',`PAYMENT_TYPE`='{4}',`AUTHOR_ID`='{5}' WHERE `ID`={6}".format(
-                            order_comment,
-                            order_date,
-                            order_status,
-                            order_delivery_date,
-                            order_payment_type,
-                            order_author,
-                            order_id)
+                        sql = """UPDATE `orders` 
+                                 SET 
+                                 `COMMENT`='{0}',
+                                 `ORDER_DATE`='{1}',
+                                 `STATUS`='{2}',
+                                 `DELIVERY_DATE`='{3}',
+                                 `PAYMENT_TYPE`='{4}',
+                                 `AUTHOR_ID`='{5}' 
+                                 WHERE `ID`={6}""".format(order.comment,
+                                                          order.date,
+                                                          order.status,
+                                                          order.delivery_date,
+                                                          order.payment_type,
+                                                          order.author_id,
+                                                          order_id)
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
@@ -118,11 +117,11 @@ async def delete_order(order_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = "SELECT `ID` FROM `orders` WHERE `ID`={0}".format(order_id)
+                    sql = 'SELECT `ID` FROM `orders` WHERE `ID`={0}'.format(order_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     if len(result) > 0:
-                        sql = "DELETE FROM `orders` WHERE `ID`={0}".format(order_id)
+                        sql = 'DELETE FROM `orders` WHERE `ID`={0}'.format(order_id)
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
@@ -144,7 +143,7 @@ async def delete_order(order_id: int):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)} {err_message}')
 
 
-@router.get("/", status_code=status.HTTP_200_OK)
+@router.get("/", status_code=status.HTTP_200_OK)        #, response_model=Order
 async def get_orders():
     try:
         connection = pymysql.connect(host=DB_HOST,
@@ -155,7 +154,7 @@ async def get_orders():
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = "SELECT * FROM `orders`"
+                    sql = 'SELECT * FROM `orders`'
                     cursor.execute(sql)
                     result = cursor.fetchall()
                 except Exception as err:
@@ -174,7 +173,7 @@ async def get_orders():
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)} {err_message}')
 
 
-@router.get("/{order_id}", status_code=status.HTTP_200_OK)
+@router.get("/{order_id}", status_code=status.HTTP_200_OK)  #, response_model=Order
 async def get_order(order_id: int):
     try:
         connection = pymysql.connect(host=DB_HOST,
@@ -185,7 +184,7 @@ async def get_order(order_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = "SELECT * FROM `orders` WHERE `ID`={0}".format(order_id)
+                    sql = 'SELECT * FROM `orders` WHERE `ID`={0}'.format(order_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     if len(result) > 0:

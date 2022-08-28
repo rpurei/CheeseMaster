@@ -9,7 +9,7 @@ from .production.routes import router as production_router
 from .warehouse.routes import router as warehouse_router
 from fastapi import APIRouter
 
-router = APIRouter()
+router = APIRouter(prefix='/api')
 router.include_router(category_router)
 router.include_router(content_router)
 router.include_router(manufacturer_router)

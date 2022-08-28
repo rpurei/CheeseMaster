@@ -1,6 +1,7 @@
 from app_logger import logger
 from config import DB_HOST, DB_NAME, DB_USER, DB_PASSWORD
-from fastapi import APIRouter, Request, status, HTTPException
+from .models import Price
+from fastapi import APIRouter, status, HTTPException
 from fastapi.responses import JSONResponse
 import pymysql.cursors
 
@@ -13,9 +14,8 @@ router = APIRouter(
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def add_price(request: Request):
+async def add_price(price: Price):
     try:
-        payload = await request.json()
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
                                      password=DB_PASSWORD,
@@ -24,15 +24,15 @@ async def add_price(request: Request):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = 'INSERT INTO `prices` (`PRODUCT_ID`,`ITEM_MEASURE`,`ITEM_PRICE`,`AUTHOR_ID`) VALUES (%s,%s,%s,%s)'
-                    price_product_id = payload.get('product_id') if payload.get('product_id') else 1
-                    price_item_measure = payload.get('item_measure') if payload.get('item_measure') else 'кг'
-                    price_item_price = payload.get('item_price') if payload.get('item_price') else 0
-                    price_author = payload.get('author_id') if payload.get('author_id') else 1
-                    cursor.execute(sql, (price_product_id,
-                                         price_item_measure,
-                                         price_item_price,
-                                         price_author
+                    sql = """INSERT INTO `prices` (`PRODUCT_ID`,
+                                                   `ITEM_MEASURE`,
+                                                   `ITEM_PRICE`,
+                                                   `AUTHOR_ID`) 
+                             VALUES (%s,%s,%s,%s)"""
+                    cursor.execute(sql, (price.product_id,
+                                         price.item_measure,
+                                         price.item_price,
+                                         price.author_id
                                          ))
                 except Exception as err:
                     err_message = ''
@@ -52,9 +52,8 @@ async def add_price(request: Request):
 
 
 @router.patch("/{price_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def update_price(request: Request, price_id: int):
+async def update_price(price: Price, price_id: int):
     try:
-        payload = await request.json()
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
                                      password=DB_PASSWORD,
@@ -63,20 +62,20 @@ async def update_price(request: Request, price_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = "SELECT `ID` FROM `prices` WHERE `ID`={0}".format(price_id)
+                    sql = 'SELECT `ID` FROM `prices` WHERE `ID`={0}'.format(price_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     if len(result) > 0:
-                        price_product_id = payload.get('product_id') if payload.get('product_id') else 1
-                        price_item_measure = payload.get('item_measure') if payload.get('item_measure') else 'кг'
-                        price_item_price = payload.get('item_price') if payload.get('item_price') else 0
-                        price_author = payload.get('author_id') if payload.get('author_id') else 1
-                        sql = "UPDATE `prices` SET `PRODUCT_ID`='{0}',`ITEM_MEASURE`='{1}',`ITEM_PRICE`='{2}',`AUTHOR_ID`='{3}' WHERE `ID`={4}".format(
-                                                                                                        price_product_id,
-                                                                                                        price_item_measure,
-                                                                                                        price_item_price,
-                                                                                                        price_author,
-                                                                                                        price_id)
+                        sql = """UPDATE `prices` 
+                                 SET `PRODUCT_ID`='{0}',
+                                     `ITEM_MEASURE`='{1}',
+                                     `ITEM_PRICE`='{2}',
+                                     `AUTHOR_ID`='{3}' 
+                                 WHERE `ID`={4}""".format(price.product_id,
+                                                            price.item_measure,
+                                                            price.item_price,
+                                                            price.author_id,
+                                                            price_id)
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
@@ -109,11 +108,11 @@ async def delete_price(price_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = "SELECT `ID` FROM `prices` WHERE `ID`={0}".format(price_id)
+                    sql = 'SELECT `ID` FROM `prices` WHERE `ID`={0}'.format(price_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     if len(result) > 0:
-                        sql = "DELETE FROM `prices` WHERE `ID`={0}".format(price_id)
+                        sql = 'DELETE FROM `prices` WHERE `ID`={0}'.format(price_id)
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
@@ -135,7 +134,7 @@ async def delete_price(price_id: int):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)} {err_message}')
 
 
-@router.get("/", status_code=status.HTTP_200_OK)
+@router.get("/", status_code=status.HTTP_200_OK)        #, response_model=Price
 async def get_prices():
     try:
         connection = pymysql.connect(host=DB_HOST,
@@ -146,7 +145,7 @@ async def get_prices():
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = "SELECT * FROM `prices`"
+                    sql = 'SELECT * FROM `prices`'
                     cursor.execute(sql)
                     result = cursor.fetchall()
                 except Exception as err:
@@ -165,7 +164,7 @@ async def get_prices():
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)} {err_message}')
 
 
-@router.get("/{price_id}", status_code=status.HTTP_200_OK)
+@router.get("/{price_id}", status_code=status.HTTP_200_OK)      #, response_model=Price
 async def get_price(price_id: int):
     try:
         connection = pymysql.connect(host=DB_HOST,
@@ -176,7 +175,7 @@ async def get_price(price_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = "SELECT * FROM `prices` WHERE `ID`={0}".format(price_id)
+                    sql = 'SELECT * FROM `prices` WHERE `ID`={0}'.format(price_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     if len(result) > 0:
