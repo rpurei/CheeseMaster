@@ -28,10 +28,11 @@ async def add_production(production: Production):
                                                         `MANUFACTURER_ID`,
                                                         `WAREHOUSE_ID`,
                                                         `AMOUNT`,
+                                                        `ITEM_MEASURE`,
                                                         `DATE`,
                                                         `COMMENT`,
                                                         `AUTHOR_ID`) 
-                            VALUES (%s,%s,%s,%s,%s,%s,%s)"""
+                            VALUES (%s,%s,%s,%s,%s,%s,%s,%s)"""
                     cursor.execute(sql, (production.product_id,
                                          production.manufacturer_id,
                                          production.warehouse_id,
@@ -77,13 +78,15 @@ async def update_production(production: Production, production_id: int):
                                      `MANUFACTURER_ID`='{1}',
                                      `WAREHOUSE_ID`='{2}',
                                      `AMOUNT`='{3}',
-                                     `DATE`='{4}',
-                                     `COMMENT`='{5}',
-                                     `AUTHOR_ID`='{6}' 
-                                 WHERE `ID`={7}""".format(production.product_id,
+                                     `ITEM_MEASURE`='{4}',
+                                     `DATE`='{5}',
+                                     `COMMENT`='{6}',
+                                     `AUTHOR_ID`='{7}' 
+                                 WHERE `ID`={8}""".format(production.product_id,
                                                             production.manufacturer_id,
                                                             production.warehouse_id,
                                                             production.amount,
+                                                            production.item_measure,
                                                             production.date,
                                                             production.comment,
                                                             production.author_id,

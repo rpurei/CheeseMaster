@@ -10,6 +10,12 @@ from .warehouse.routes import router as warehouse_router
 from fastapi import APIRouter
 
 router = APIRouter(prefix='/api')
+
+
+@router.get("/")
+async def root():
+    return {"message": "CheeseMaster online!"}
+
 router.include_router(category_router)
 router.include_router(content_router)
 router.include_router(manufacturer_router)

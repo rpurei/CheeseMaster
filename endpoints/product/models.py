@@ -7,5 +7,7 @@ class Product(BaseModel):
     active: bool
     category_id: int
     comment: Union[str, None] = None
+    description: Union[str, None] = None
     author_id: int
-    image_path: str
+    image: str
+    ext: str

@@ -8,10 +8,5 @@ app = FastAPI(docs_url='/api/docs',
 app.include_router(api_router)
 
 
-@app.get("/")
-async def root():
-    return {"message": "CheeseMaster online!"}
-
-
 if __name__ == "__main__":
     uvicorn.run(app, host=APP_HOST, port=APP_PORT)

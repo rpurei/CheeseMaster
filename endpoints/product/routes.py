@@ -1,31 +1,17 @@
 from app_logger import logger
 from config import DB_HOST, DB_NAME, DB_USER, DB_PASSWORD, IMAGE_PATH, IMAGE_NAME_LENGTH
 from .models import Product
+from .utils import image_processing
 from fastapi import APIRouter, status, HTTPException
 from fastapi.responses import JSONResponse
 import pymysql.cursors
-import string
-import random
+
 
 router = APIRouter(
     prefix="/products",
     tags=["Product"],
     responses={404: {"detail": "Not found"}},
 )
-
-
-def image_processing(json_image, product_category):
-    image_full_name = IMAGE_PATH + 'default_product_image.png'
-    print('Image', len(json_image))
-    if len(json_image) > 0:
-        # !!!!!!!!!!!
-        # раскодировка Base64 и запись в файл
-        #
-
-        image_full_name = IMAGE_PATH + product_category + '/' + ''.join(random.choices(string.ascii_uppercase +
-                                                                                          string.digits, k=IMAGE_NAME_LENGTH))
-
-    return image_full_name
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
@@ -40,23 +26,25 @@ async def add_product(product: Product):
             with connection.cursor() as cursor:
                 try:
                     sql = """INSERT INTO `products` (`NAME`,
-                                                     `active`,
+                                                     `ACTIVE`,
                                                      `CATEGORY_ID`,
+                                                     `DESCRIPTION`,
                                                      `COMMENT`,
                                                      `AUTHOR_ID`,
                                                      `IMAGE_PATH`) 
-                            VALUES (%s,%s,%s,%s,%s,%s)"""
-                    product_image_path = image_processing(product.image_path, product.category_id)
+                            VALUES (%s,%s,%s,%s,%s,%s,%s)"""
+                    product_image_path = image_processing(product.image, product.category_id, product.ext)
                     cursor.execute(sql, (product.name,
                                          product.active,
                                          product.category_id,
+                                         product.description,
                                          product.comment,
                                          product.author_id,
-                                         product_image_path))
+                                         str(product_image_path)))
                 except Exception as err:
                     err_message = ''
                     for err_item in err.args:
-                        err_message += err_item
+                        err_message += str(err_item)
                     logger.error(f'Error: {str(err)} {err_message}')
                     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                                         detail=f'Error {str(err)} {err_message}')
@@ -65,7 +53,7 @@ async def add_product(product: Product):
     except Exception as err:
         err_message = ''
         for err_item in err.args:
-            err_message += err_item
+            err_message += str(err_item)
         logger.error(f'Error: {str(err)} {err_message}')
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)} {err_message}')
 
@@ -85,21 +73,23 @@ async def update_product(product: Product, product_id: int):
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     if len(result) > 0:
-                        product_image_path = image_processing(product.image_path, product.category_id)
+                        product_image_path = image_processing(product.image, product.category_id, product.ext)
                         sql = """UPDATE `products` 
                                  SET `NAME`='{0}',
-                                     `active`='{1}',
-                                     `CATEGORY_ID`={2},
-                                     `COMMENT`='{3}',
-                                     `AUTHOR_ID`='{4}',
-                                     `IMAGE_PATH`='{5}' 
-                                 WHERE `ID`={6}""".format(product.name,
-                                                            product.active,
-                                                            product.category_id,
-                                                            product.comment,
-                                                            product.author_id,
-                                                            product_image_path,
-                                                            product_id)
+                                     `ACTIVE`='{1}',
+                                     `CATEGORY_ID`='{2}',
+                                     `DESCRIPTION`='{3}',
+                                     `COMMENT`='{4}',
+                                     `AUTHOR_ID`='{5}',
+                                     `IMAGE_PATH`='{6}' 
+                                 WHERE `ID`={7}""".format(product.name,
+                                                          product.active,
+                                                          product.category_id,
+                                                          product.description,
+                                                          product.comment,
+                                                          product.author_id,
+                                                          product_image_path,
+                                                          product_id)
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
@@ -140,7 +130,7 @@ async def delete_product(product_id: int):
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
-                                            content={"detail": f'Product with ID: {product_id} not found.'},)
+                                            content={"detail": f'Product with ID: {product_id} not found.'}, )
                 except Exception as err:
                     err_message = ''
                     for err_item in err.args:
@@ -158,7 +148,7 @@ async def delete_product(product_id: int):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)} {err_message}')
 
 
-@router.get("/", status_code=status.HTTP_200_OK)        #, response_model=Product
+@router.get("/", status_code=status.HTTP_200_OK)  # , response_model=Product
 async def get_products():
     try:
         connection = pymysql.connect(host=DB_HOST,
@@ -188,7 +178,7 @@ async def get_products():
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)} {err_message}')
 
 
-@router.get("/{product_id}", status_code=status.HTTP_200_OK)    #, response_model=Product
+@router.get("/{product_id}", status_code=status.HTTP_200_OK)  # , response_model=Product
 async def get_product(product_id: int):
     try:
         connection = pymysql.connect(host=DB_HOST,
@@ -206,7 +196,7 @@ async def get_product(product_id: int):
                         return result
                     else:
                         return JSONResponse(status_code=404,
-                                            content={"detail": f'Product with ID: {product_id} not found.'},)
+                                            content={"detail": f'Product with ID: {product_id} not found.'}, )
                 except Exception as err:
                     err_message = ''
                     for err_item in err.args:

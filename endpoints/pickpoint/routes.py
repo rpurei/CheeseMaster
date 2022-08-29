@@ -26,13 +26,21 @@ async def add_pickpoint(pickpoint: Pickpoint):
                 try:
                     sql = """INSERT INTO `pickpoints` (`ADDRESS`,
                                                        `WORKHOURS`,
+                                                       `PHONE`,
                                                        `COMMENT`,
+                                                       `LINK_YANDEX`,
+                                                       `LINK_POINT`,
+                                                       `MAP_FRAME`,
                                                        `ACTIVE`,
                                                        `AUTHOR_ID`) 
-                             VALUES (%s,%s,%s,%s,%s)"""
+                             VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
                     cursor.execute(sql, (pickpoint.address,
                                          pickpoint.workhours,
+                                         pickpoint.phone,
                                          pickpoint.comment,
+                                         pickpoint.link_yandex,
+                                         pickpoint.link_point,
+                                         pickpoint.map_frame,
                                          pickpoint.active,
                                          pickpoint.author_id
                                          ))
@@ -71,15 +79,23 @@ async def update_pickpoint(pickpoint: Pickpoint, pickpoint_id: int):
                         sql = """UPDATE `pickpoints` 
                                  SET `ADDRESS`='{0}',
                                      `WORKHOURS`='{1}',
-                                     `COMMENT`='{2}',
-                                     `ACTIVE`='{3}',
-                                     `AUTHOR_ID`='{4}' 
-                                 WHERE `ID`={5}""".format(pickpoint.address,
-                                                            pickpoint.workhours,
-                                                            pickpoint.comment,
-                                                            pickpoint.active,
-                                                            pickpoint.author_id,
-                                                            pickpoint_id)
+                                     `PHONE`='{2}',
+                                     `COMMENT`='{3}',
+                                     `LINK_YANDEX`='{4}',
+                                     `LINK_POINT`='{5}',
+                                     `MAP_FRAME`='{6}',
+                                     `ACTIVE`='{7}',
+                                     `AUTHOR_ID`='{8}' 
+                                 WHERE `ID`={9}""".format(pickpoint.address,
+                                                          pickpoint.workhours,
+                                                          pickpoint.phone,
+                                                          pickpoint.comment,
+                                                          pickpoint.link_yandex,
+                                                          pickpoint.link_point,
+                                                          pickpoint.map_frame,
+                                                          pickpoint.active,
+                                                          pickpoint.author_id,
+                                                          pickpoint_id)
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,

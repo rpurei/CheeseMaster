@@ -9,5 +9,6 @@ class Production(BaseModel):
     manufacturer_id: int
     warehouse_id: int
     amount: float
+    item_measure: str
     comment: Union[str, None] = None
     author_id: int

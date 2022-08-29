@@ -24,7 +24,13 @@ async def add_warehouse(warehouse: Warehouse):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = 'INSERT INTO `warehouses` (`PRODUCT_ID`,`AMOUNT`,`RESERVE`,`AUTHOR_ID`) VALUES (%s,%s,%s,%s)'
+                    sql = """INSERT INTO `warehouses` (`PRODUCT_ID`,
+                                                       `AMOUNT`,
+                                                       `ITEM_MEASURE`,
+                                                       `RESERVE`,
+                                                       `ACTIVE`,
+                                                       `AUTHOR_ID`) 
+                             VALUES (%s,%s,%s,%s,%s,%s)"""
                     cursor.execute(sql, (warehouse.product_id,
                                          warehouse.amount,
                                          warehouse.reserve,
@@ -65,13 +71,17 @@ async def update_warehouse(warehouse: Warehouse, warehouse_id: int):
                         sql = """UPDATE `warehouses` 
                                  SET `PRODUCT_ID`='{0}',
                                      `AMOUNT`='{1}',
-                                     `RESERVE`='{2}',
-                                     `AUTHOR_ID`='{3}' 
-                                 WHERE `ID`={4}""".format(warehouse.product_id,
-                                                            warehouse.amount,
-                                                            warehouse.reserve,
-                                                            warehouse.author_id,
-                                                            warehouse_id)
+                                     `ITEM_MEASURE`='{2}',
+                                     `RESERVE`='{3}',
+                                     `ACTIVE`='{4}',
+                                     `AUTHOR_ID`='{5}' 
+                                 WHERE `ID`={6}""".format(warehouse.product_id,
+                                                          warehouse.amount,
+                                                          warehouse.item_measure,
+                                                          warehouse.reserve,
+                                                          warehouse.active,
+                                                          warehouse.author_id,
+                                                          warehouse_id)
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
