@@ -26,12 +26,12 @@ async def add_category(category: Category):
                 try:
                     sql = """INSERT INTO `categories` 
                                          (`NAME`,
-                                         `AVAILABLE`,
+                                         `active`,
                                          `COMMENT`,
                                          `AUTHOR_ID`) 
                              VALUES (%s,%s,%s,%s)"""
                     cursor.execute(sql, (category.name,
-                                         category.available,
+                                         category.active,
                                          category.comment,
                                          category.author_id))
                 except Exception as err:
@@ -68,11 +68,11 @@ async def update_category(category: Category, category_id: int):
                     if len(result) > 0:
                         sql = """UPDATE `categories` 
                                  SET `NAME`='{0}',
-                                     `AVAILABLE`='{1}',
+                                     `active`='{1}',
                                      `COMMENT`='{2}',
                                      `AUTHOR_ID`='{3}' 
                                  WHERE `ID`={4}""".format(category.name,
-                                                          category.available,
+                                                          category.active,
                                                           category.comment,
                                                           category.author_id,
                                                           category_id)

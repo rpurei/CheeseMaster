@@ -33,7 +33,7 @@ async def add_pickpoint(pickpoint: Pickpoint):
                     cursor.execute(sql, (pickpoint.address,
                                          pickpoint.workhours,
                                          pickpoint.comment,
-                                         pickpoint.available,
+                                         pickpoint.active,
                                          pickpoint.author_id
                                          ))
                 except Exception as err:
@@ -77,7 +77,7 @@ async def update_pickpoint(pickpoint: Pickpoint, pickpoint_id: int):
                                  WHERE `ID`={5}""".format(pickpoint.address,
                                                             pickpoint.workhours,
                                                             pickpoint.comment,
-                                                            pickpoint.available,
+                                                            pickpoint.active,
                                                             pickpoint.author_id,
                                                             pickpoint_id)
                         cursor.execute(sql)

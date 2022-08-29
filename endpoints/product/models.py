@@ -4,7 +4,7 @@ from typing import Union
 
 class Product(BaseModel):
     name: str
-    available: bool
+    active: bool
     category_id: int
     comment: Union[str, None] = None
     author_id: int

@@ -40,7 +40,7 @@ async def add_product(product: Product):
             with connection.cursor() as cursor:
                 try:
                     sql = """INSERT INTO `products` (`NAME`,
-                                                     `AVAILABLE`,
+                                                     `active`,
                                                      `CATEGORY_ID`,
                                                      `COMMENT`,
                                                      `AUTHOR_ID`,
@@ -48,7 +48,7 @@ async def add_product(product: Product):
                             VALUES (%s,%s,%s,%s,%s,%s)"""
                     product_image_path = image_processing(product.image_path, product.category_id)
                     cursor.execute(sql, (product.name,
-                                         product.available,
+                                         product.active,
                                          product.category_id,
                                          product.comment,
                                          product.author_id,
@@ -88,13 +88,13 @@ async def update_product(product: Product, product_id: int):
                         product_image_path = image_processing(product.image_path, product.category_id)
                         sql = """UPDATE `products` 
                                  SET `NAME`='{0}',
-                                     `AVAILABLE`='{1}',
+                                     `active`='{1}',
                                      `CATEGORY_ID`={2},
                                      `COMMENT`='{3}',
                                      `AUTHOR_ID`='{4}',
                                      `IMAGE_PATH`='{5}' 
                                  WHERE `ID`={6}""".format(product.name,
-                                                            product.available,
+                                                            product.active,
                                                             product.category_id,
                                                             product.comment,
                                                             product.author_id,
