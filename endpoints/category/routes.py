@@ -1,20 +1,20 @@
 from app_logger import logger
 from config import DB_HOST, DB_NAME, DB_USER, DB_PASSWORD
-from .models import Category
+from .models import CategoryIn, CategoryOut
 from fastapi import APIRouter, status, HTTPException
 from fastapi.responses import JSONResponse
 import pymysql.cursors
 
 
 router = APIRouter(
-    prefix="/categories",
-    tags=["Category"],
-    responses={404: {"detail": "Not found"}},
+    prefix='/categories',
+    tags=['Category'],
+    responses={404: {'detail': 'Not found'}},
 )
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
-async def add_category(category: Category):
+@router.post('/', status_code=status.HTTP_201_CREATED)
+async def add_category(category: CategoryIn):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -35,24 +35,17 @@ async def add_category(category: Category):
                                          category.comment,
                                          category.author_id))
                 except Exception as err:
-                    err_message = ''
-                    for err_item in err.args:
-                        err_message += err_item
-                    logger.error(f'Error: {str(err)} {err_message}')
-                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                        detail=f'Error {str(err)} {err_message}')
+                    logger.error(f'Error: {str(err)}')
+                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
             connection.commit()
             return {'detail': 'Category added'}
     except Exception as err:
-        err_message = ''
-        for err_item in err.args:
-            err_message += err_item
-        logger.error(f'Error: {str(err)} {err_message}')
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)} {err_message}')
+        logger.error(f'Error: {str(err)}')
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
 
 
-@router.patch("/{category_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def update_category(category: Category, category_id: int):
+@router.patch('/{category_id}', status_code=status.HTTP_204_NO_CONTENT)
+async def update_category(category: CategoryIn, category_id: int):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -62,7 +55,7 @@ async def update_category(category: Category, category_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = "SELECT `ID` FROM `categories` WHERE `ID`={0}".format(category_id)
+                    sql = 'SELECT `ID` FROM `categories` WHERE `ID`={0}'.format(category_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     if len(result) > 0:
@@ -79,25 +72,18 @@ async def update_category(category: Category, category_id: int):
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
-                                            content={"detail": f'Category with ID: {category_id} not found.'}, )
+                                            content={'detail': f'Category with ID: {category_id} not found.'}, )
                 except Exception as err:
-                    err_message = ''
-                    for err_item in err.args:
-                        err_message += err_item
-                    logger.error(f'Error: {str(err)} {err_message}')
-                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                        detail=f'Error {str(err)} {err_message}')
+                    logger.error(f'Error: {str(err)}')
+                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
             connection.commit()
             return {'detail': f'Category ID {category_id} updated'}
     except Exception as err:
-        err_message = ''
-        for err_item in err.args:
-            err_message += err_item
-        logger.error(f'Error: {str(err)} {err_message}')
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)} {err_message}')
+        logger.error(f'Error: {str(err)}')
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
 
 
-@router.delete("/{category_id}", status_code=status.HTTP_200_OK)
+@router.delete('/{category_id}', status_code=status.HTTP_200_OK)
 async def delete_category(category_id: int):
     try:
         connection = pymysql.connect(host=DB_HOST,
@@ -118,23 +104,17 @@ async def delete_category(category_id: int):
                         return JSONResponse(status_code=404,
                                             content={"detail": f'Category with ID: {category_id} not found.'},)
                 except Exception as err:
-                    err_message = ''
-                    for err_item in err.args:
-                        err_message += err_item
-                    logger.error(f'Error: {str(err)} {err_message}')
+                    logger.error(f'Error: {str(err)}')
                     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                        detail=f'Error {str(err)} {err_message}')
+                                        detail=f'Error {str(err)}')
             connection.commit()
             return {'detail': f'Category ID: {category_id} deleted'}
     except Exception as err:
-        err_message = ''
-        for err_item in err.args:
-            err_message += err_item
-        logger.error(f'Error: {str(err)} {err_message}')
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)} {err_message}')
+        logger.error(f'Error: {str(err)}')
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
 
 
-@router.get("/", status_code=status.HTTP_200_OK)   #, response_model=Category
+@router.get("/", status_code=status.HTTP_200_OK)
 async def get_categories():
     try:
         connection = pymysql.connect(host=DB_HOST,
@@ -145,26 +125,20 @@ async def get_categories():
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = "SELECT * FROM `categories`"
+                    sql = 'SELECT * FROM `categories`'
                     cursor.execute(sql)
                     result = cursor.fetchall()
                 except Exception as err:
-                    err_message = ''
-                    for err_item in err.args:
-                        err_message += err_item
-                    logger.error(f'Error: {str(err)} {err_message}')
+                    logger.error(f'Error: {str(err)}')
                     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                        detail=f'Error {str(err)} {err_message}')
+                                        detail=f'Error {str(err)}')
             return result
     except Exception as err:
-        err_message = ''
-        for err_item in err.args:
-            err_message += err_item
-        logger.error(f'Error: {str(err)} {err_message}')
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)} {err_message}')
+        logger.error(f'Error: {str(err)}')
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
 
 
-@router.get("/{category_id}", status_code=status.HTTP_200_OK) #, response_model=Category
+@router.get('/{category_id}', status_code=status.HTTP_200_OK, response_model=CategoryOut)
 async def get_category(category_id: int):
     try:
         connection = pymysql.connect(host=DB_HOST,
@@ -177,22 +151,23 @@ async def get_category(category_id: int):
                 try:
                     sql = 'SELECT * FROM `categories` WHERE `ID`={0}'.format(category_id)
                     cursor.execute(sql)
-                    result = cursor.fetchall()
+                    result = cursor.fetchone()
+                    result = dict(result)
                     if len(result) > 0:
-                        return result
+                        return {'id': result.get('ID'),
+                                'name': result.get('NAME'),
+                                'active': result.get('ACTIVE'),
+                                'comment': result.get('COMMENT'),
+                                'author_id': result.get('AUTHOR_ID'),
+                                'created': result.get('CREATED'),
+                                'updated': result.get('UPDATED')
+                                }
                     else:
                         return JSONResponse(status_code=404,
                                             content={"detail": f'Category with ID: {category_id} not found.'},)
                 except Exception as err:
-                    err_message = ''
-                    for err_item in err.args:
-                        err_message += err_item
-                    logger.error(f'Error: {str(err)} {err_message}')
-                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                        detail=f'Error {str(err)} {err_message}')
+                    logger.error(f'Error: {str(err)}')
+                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
     except Exception as err:
-        err_message = ''
-        for err_item in err.args:
-            err_message += err_item
-        logger.error(f'Error: {str(err)} {err_message}')
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)} {err_message}')
+        logger.error(f'Error: {str(err)}')
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')

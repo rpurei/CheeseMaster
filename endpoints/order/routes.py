@@ -1,20 +1,20 @@
 from app_logger import logger
 from config import DB_HOST, DB_NAME, DB_USER, DB_PASSWORD
-from .models import Order
+from .models import OrderIn, OrderOut
 from fastapi import APIRouter, status, HTTPException
 from fastapi.responses import JSONResponse
 import pymysql.cursors
 
 
 router = APIRouter(
-    prefix="/orders",
-    tags=["Order"],
-    responses={404: {"detail": "Not found"}},
+    prefix='/orders',
+    tags=['Order'],
+    responses={404: {'detail': 'Not found'}},
 )
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
-async def add_order(order: Order):
+@router.post('/', status_code=status.HTTP_201_CREATED)
+async def add_order(order: OrderIn):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -39,24 +39,17 @@ async def add_order(order: Order):
                                          order.author_id
                                          ))
                 except Exception as err:
-                    err_message = ''
-                    for err_item in err.args:
-                        err_message += err_item
-                    logger.error(f'Error: {str(err)} {err_message}')
-                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                        detail=f'Error {str(err)} {err_message}')
+                    logger.error(f'Error: {str(err)}')
+                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
             connection.commit()
             return {'detail': 'Order added'}
     except Exception as err:
-        err_message = ''
-        for err_item in err.args:
-            err_message += err_item
-        logger.error(f'Error: {str(err)} {err_message}')
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)} {err_message}')
+        logger.error(f'Error: {str(err)}')
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
 
 
-@router.patch("/{order_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def update_order(order: Order, order_id: int):
+@router.patch('/{order_id}', status_code=status.HTTP_204_NO_CONTENT)
+async def update_order(order: OrderIn, order_id: int):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -90,23 +83,16 @@ async def update_order(order: Order, order_id: int):
                         return JSONResponse(status_code=404,
                                             content={"detail": f'Order with ID: {order_id} not found.'}, )
                 except Exception as err:
-                    err_message = ''
-                    for err_item in err.args:
-                        err_message += err_item
-                    logger.error(f'Error: {str(err)} {err_message}')
-                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                        detail=f'Error {str(err)} {err_message}')
+                    logger.error(f'Error: {str(err)}')
+                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
             connection.commit()
             return {'detail': f'Order ID {order_id} updated'}
     except Exception as err:
-        err_message = ''
-        for err_item in err.args:
-            err_message += err_item
-        logger.error(f'Error: {str(err)} {err_message}')
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)} {err_message}')
+        logger.error(f'Error: {str(err)}')
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
 
 
-@router.delete("/{order_id}", status_code=status.HTTP_200_OK)
+@router.delete('/{order_id}', status_code=status.HTTP_200_OK)
 async def delete_order(order_id: int):
     try:
         connection = pymysql.connect(host=DB_HOST,
@@ -127,23 +113,16 @@ async def delete_order(order_id: int):
                         return JSONResponse(status_code=404,
                                             content={"detail": f'Order with ID: {order_id} not found.'},)
                 except Exception as err:
-                    err_message = ''
-                    for err_item in err.args:
-                        err_message += err_item
-                    logger.error(f'Error: {str(err)} {err_message}')
-                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                        detail=f'Error {str(err)} {err_message}')
+                    logger.error(f'Error: {str(err)}')
+                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
             connection.commit()
             return {'detail': f'Order ID: {order_id} deleted'}
     except Exception as err:
-        err_message = ''
-        for err_item in err.args:
-            err_message += err_item
-        logger.error(f'Error: {str(err)} {err_message}')
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)} {err_message}')
+        logger.error(f'Error: {str(err)}')
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
 
 
-@router.get("/", status_code=status.HTTP_200_OK)        #, response_model=Order
+@router.get('/', status_code=status.HTTP_200_OK)
 async def get_orders():
     try:
         connection = pymysql.connect(host=DB_HOST,
@@ -158,22 +137,15 @@ async def get_orders():
                     cursor.execute(sql)
                     result = cursor.fetchall()
                 except Exception as err:
-                    err_message = ''
-                    for err_item in err.args:
-                        err_message += err_item
-                    logger.error(f'Error: {str(err)} {err_message}')
-                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                        detail=f'Error {str(err)} {err_message}')
+                    logger.error(f'Error: {str(err)}')
+                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
             return result
     except Exception as err:
-        err_message = ''
-        for err_item in err.args:
-            err_message += err_item
-        logger.error(f'Error: {str(err)} {err_message}')
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)} {err_message}')
+        logger.error(f'Error: {str(err)}')
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
 
 
-@router.get("/{order_id}", status_code=status.HTTP_200_OK)  #, response_model=Order
+@router.get('/{order_id}', status_code=status.HTTP_200_OK, response_model=OrderOut)
 async def get_order(order_id: int):
     try:
         connection = pymysql.connect(host=DB_HOST,
@@ -186,22 +158,26 @@ async def get_order(order_id: int):
                 try:
                     sql = 'SELECT * FROM `orders` WHERE `ID`={0}'.format(order_id)
                     cursor.execute(sql)
-                    result = cursor.fetchall()
+                    result = cursor.fetchone()
+                    result = dict(result)
                     if len(result) > 0:
-                        return result
+                        return {
+                                    'id': result.get('ID'),
+                                    'date': result.get('ORDER_DATE'),
+                                    'delivery_date': result.get('DELIVERY_DATE'),
+                                    'payment_type': result.get('PAYMENT_TYPE'),
+                                    'status': result.get('STATUS'),
+                                    'comment': result.get('COMMENT'),
+                                    'author_id': result.get('AUTHOR_ID'),
+                                    'created': result.get('CREATED'),
+                                    'updated': result.get('UPDATED')
+                               }
                     else:
                         return JSONResponse(status_code=404,
-                                            content={"detail": f'Order with ID: {order_id} not found.'},)
+                                            content={'detail': f'Order with ID: {order_id} not found.'},)
                 except Exception as err:
-                    err_message = ''
-                    for err_item in err.args:
-                        err_message += err_item
-                    logger.error(f'Error: {str(err)} {err_message}')
-                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                        detail=f'Error {str(err)} {err_message}')
+                    logger.error(f'Error: {str(err)}')
+                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
     except Exception as err:
-        err_message = ''
-        for err_item in err.args:
-            err_message += err_item
-        logger.error(f'Error: {str(err)} {err_message}')
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)} {err_message}')
+        logger.error(f'Error: {str(err)}')
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')

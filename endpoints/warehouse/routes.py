@@ -1,20 +1,20 @@
 from app_logger import logger
 from config import DB_HOST, DB_NAME, DB_USER, DB_PASSWORD
-from .models import Warehouse
+from .models import WarehouseIn, WarehouseOut
 from fastapi import APIRouter, status, HTTPException
 from fastapi.responses import JSONResponse
 import pymysql.cursors
 
 
 router = APIRouter(
-    prefix="/warehouses",
-    tags=["Warehouse"],
-    responses={404: {"detail": "Not found"}},
+    prefix='/warehouses',
+    tags=['Warehouse'],
+    responses={404: {'detail': 'Not found'}},
 )
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
-async def add_warehouse(warehouse: Warehouse):
+@router.post('/', status_code=status.HTTP_201_CREATED)
+async def add_warehouse(warehouse: WarehouseIn):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -53,8 +53,8 @@ async def add_warehouse(warehouse: Warehouse):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)} {err_message}')
 
 
-@router.patch("/{warehouse_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def update_warehouse(warehouse: Warehouse, warehouse_id: int):
+@router.patch('/{warehouse_id}', status_code=status.HTTP_204_NO_CONTENT)
+async def update_warehouse(warehouse: WarehouseIn, warehouse_id: int):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -85,7 +85,7 @@ async def update_warehouse(warehouse: Warehouse, warehouse_id: int):
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
-                                            content={"detail": f'Warehouse with ID: {warehouse_id} not found.'}, )
+                                            content={'detail': f'Warehouse with ID: {warehouse_id} not found.'}, )
                 except Exception as err:
                     err_message = ''
                     for err_item in err.args:
@@ -96,11 +96,8 @@ async def update_warehouse(warehouse: Warehouse, warehouse_id: int):
             connection.commit()
             return {'detail': f'Warehouse ID {warehouse_id} updated'}
     except Exception as err:
-        err_message = ''
-        for err_item in err.args:
-            err_message += err_item
-        logger.error(f'Error: {str(err)} {err_message}')
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)} {err_message}')
+        logger.error(f'Error: {str(err)}')
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
 
 
 @router.delete("/{warehouse_id}", status_code=status.HTTP_200_OK)
@@ -122,25 +119,18 @@ async def delete_warehouse(warehouse_id: int):
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
-                                            content={"detail": f'Warehouse with ID: {warehouse_id} not found.'},)
+                                            content={'detail': f'Warehouse with ID: {warehouse_id} not found.'},)
                 except Exception as err:
-                    err_message = ''
-                    for err_item in err.args:
-                        err_message += err_item
-                    logger.error(f'Error: {str(err)} {err_message}')
-                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                        detail=f'Error {str(err)} {err_message}')
+                    logger.error(f'Error: {str(err)}')
+                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
             connection.commit()
             return {'detail': f'Warehouse ID: {warehouse_id} deleted'}
     except Exception as err:
-        err_message = ''
-        for err_item in err.args:
-            err_message += err_item
-        logger.error(f'Error: {str(err)} {err_message}')
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)} {err_message}')
+        logger.error(f'Error: {str(err)}')
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
 
 
-@router.get("/", status_code=status.HTTP_200_OK)        #, response_model=Warehouse
+@router.get('/', status_code=status.HTTP_200_OK)
 async def get_warehouses():
     try:
         connection = pymysql.connect(host=DB_HOST,
@@ -159,18 +149,14 @@ async def get_warehouses():
                     for err_item in err.args:
                         err_message += err_item
                     logger.error(f'Error: {str(err)} {err_message}')
-                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                        detail=f'Error {str(err)} {err_message}')
+                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
             return result
     except Exception as err:
-        err_message = ''
-        for err_item in err.args:
-            err_message += err_item
-        logger.error(f'Error: {str(err)} {err_message}')
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)} {err_message}')
+        logger.error(f'Error: {str(err)}')
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
 
 
-@router.get("/{warehouse_id}", status_code=status.HTTP_200_OK)      #, response_model=Warehouse
+@router.get('/{warehouse_id}', status_code=status.HTTP_200_OK, response_model=WarehouseOut)
 async def get_warehouse(warehouse_id: int):
     try:
         connection = pymysql.connect(host=DB_HOST,
@@ -183,22 +169,26 @@ async def get_warehouse(warehouse_id: int):
                 try:
                     sql = 'SELECT * FROM `warehouses` WHERE `ID`={0}'.format(warehouse_id)
                     cursor.execute(sql)
-                    result = cursor.fetchall()
+                    result = cursor.fetchone()
+                    result = dict(result)
                     if len(result) > 0:
-                        return result
+                        return {
+                                    'id': result.get('ID'),
+                                    'product_id': result.get('PRODUCT_ID'),
+                                    'amount': result.get('AMOUNT'),
+                                    'item_measure': result.get('ITEM_MEASURE'),
+                                    'reserve': result.get('RESERVE'),
+                                    'active': result.get('ACTIVE'),
+                                    'author_id': result.get('AUTHOR_ID'),
+                                    'created': result.get('CREATED'),
+                                    'updated': result.get('UPDATED')
+                        }
                     else:
                         return JSONResponse(status_code=404,
-                                            content={"detail": f'Warehouse with ID: {warehouse_id} not found.'},)
+                                            content={'detail': f'Warehouse with ID: {warehouse_id} not found.'},)
                 except Exception as err:
-                    err_message = ''
-                    for err_item in err.args:
-                        err_message += err_item
-                    logger.error(f'Error: {str(err)} {err_message}')
-                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                        detail=f'Error {str(err)} {err_message}')
+                    logger.error(f'Error: {str(err)}')
+                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
     except Exception as err:
-        err_message = ''
-        for err_item in err.args:
-            err_message += err_item
-        logger.error(f'Error: {str(err)} {err_message}')
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)} {err_message}')
+        logger.error(f'Error: {str(err)}')
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')

@@ -7,14 +7,15 @@ from .price.routes import router as price_router
 from .product.routes import router as product_router
 from .production.routes import router as production_router
 from .warehouse.routes import router as warehouse_router
+from .users.routes import router as user_router
 from fastapi import APIRouter
 
 router = APIRouter(prefix='/api')
 
 
-@router.get("/")
+@router.get('/')
 async def root():
-    return {"message": "CheeseMaster online!"}
+    return {'message': 'CheeseMaster online!'}
 
 router.include_router(category_router)
 router.include_router(content_router)
@@ -25,3 +26,4 @@ router.include_router(price_router)
 router.include_router(product_router)
 router.include_router(production_router)
 router.include_router(warehouse_router)
+router.include_router(user_router)
