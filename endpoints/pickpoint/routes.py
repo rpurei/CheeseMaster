@@ -1,7 +1,8 @@
 from app_logger import logger
 from config import DB_HOST, DB_NAME, DB_USER, DB_PASSWORD
 from .models import PickpointIn, PickpointOut
-from fastapi import APIRouter, status, HTTPException
+from ..users.utils import get_current_user
+from fastapi import APIRouter, status, HTTPException, Security
 from fastapi.responses import JSONResponse
 import pymysql.cursors
 
@@ -14,7 +15,7 @@ router = APIRouter(
 
 
 @router.post('/', status_code=status.HTTP_201_CREATED)
-async def add_pickpoint(pickpoint: PickpointIn):
+async def add_pickpoint(pickpoint: PickpointIn, current_user=Security(get_current_user, scopes=['admin'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -57,7 +58,8 @@ async def add_pickpoint(pickpoint: PickpointIn):
 
 
 @router.patch('/{pickpoint_id}', status_code=status.HTTP_204_NO_CONTENT)
-async def update_pickpoint(pickpoint: PickpointIn, pickpoint_id: int):
+async def update_pickpoint(pickpoint: PickpointIn, pickpoint_id: int, current_user=Security(get_current_user,
+                                                                                            scopes=['admin'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -138,7 +140,9 @@ async def delete_pickpoint(pickpoint_id: int):
 
 
 @router.get('/', status_code=status.HTTP_200_OK)
-async def get_pickpoints():
+async def get_pickpoints(current_user=Security(get_current_user, scopes=['admin',
+                                                                         'user:read',
+                                                                         'cheesemaster:read'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -161,7 +165,9 @@ async def get_pickpoints():
 
 
 @router.get('/{pickpoint_id}', status_code=status.HTTP_200_OK, response_model=PickpointOut)
-async def get_pickpoint(pickpoint_id: int):
+async def get_pickpoint(pickpoint_id: int, current_user=Security(get_current_user, scopes=['admin',
+                                                                                           'user:read',
+                                                                                           'cheesemaster:read'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,

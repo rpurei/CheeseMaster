@@ -2,7 +2,8 @@ from app_logger import logger
 from config import DB_HOST, DB_NAME, DB_USER, DB_PASSWORD, IMAGE_PATH, IMAGE_NAME_LENGTH
 from .models import ProductIn, ProductOut
 from .utils import image_processing
-from fastapi import APIRouter, status, HTTPException
+from ..users.utils import get_current_user
+from fastapi import APIRouter, status, HTTPException, Security
 from fastapi.responses import JSONResponse
 import pymysql.cursors
 
@@ -15,7 +16,7 @@ router = APIRouter(
 
 
 @router.post('/', status_code=status.HTTP_201_CREATED)
-async def add_product(product: ProductIn):
+async def add_product(product: ProductIn, current_user=Security(get_current_user, scopes=['admin'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -52,7 +53,7 @@ async def add_product(product: ProductIn):
 
 
 @router.patch('/{product_id}', status_code=status.HTTP_204_NO_CONTENT)
-async def update_product(product: ProductIn, product_id: int):
+async def update_product(product: ProductIn, product_id: int, current_user=Security(get_current_user, scopes=['admin'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -132,7 +133,7 @@ async def delete_product(product_id: int):
 
 
 @router.get('/', status_code=status.HTTP_200_OK)
-async def get_products():
+async def get_products(current_user=Security(get_current_user, scopes=['admin', 'user:read', 'cheesemaster:read'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -155,7 +156,9 @@ async def get_products():
 
 
 @router.get('/{product_id}', status_code=status.HTTP_200_OK, response_model=ProductOut)
-async def get_product(product_id: int):
+async def get_product(product_id: int, current_user=Security(get_current_user, scopes=['admin',
+                                                                                       'user:read',
+                                                                                       'cheesemaster:read'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
