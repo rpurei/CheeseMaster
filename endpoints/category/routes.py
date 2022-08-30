@@ -1,9 +1,8 @@
 from app_logger import logger
 from config import DB_HOST, DB_NAME, DB_USER, DB_PASSWORD
 from .models import CategoryIn, CategoryOut
-from ..users.models import User
 from ..users.utils import get_current_user
-from fastapi import APIRouter, status, HTTPException, Depends
+from fastapi import APIRouter, status, HTTPException, Depends, Security
 from fastapi.responses import JSONResponse
 import pymysql.cursors
 
@@ -16,7 +15,7 @@ router = APIRouter(
 
 
 @router.post('/', status_code=status.HTTP_201_CREATED)
-async def add_category(category: CategoryIn):       #, current_user=Depends(get_current_user)
+async def add_category(category: CategoryIn, current_user=Security(get_current_user, scopes=["admin"])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,

@@ -20,6 +20,7 @@ router = APIRouter(
 @router.post('/login', response_model=Token)
 async def login(user: User):
     access_token = ''
+    scopes = []
     user = authenticate_user(user.name, user.password, 'LDAP')
     if not user.get('name'):
         raise HTTPException(
@@ -43,7 +44,8 @@ async def login(user: User):
                     with connection.cursor() as cursor:
                         sql = """SELECT * FROM `users` WHERE `login`='{0}'""".format(user_data['login'])
                         cursor.execute(sql)
-                        result = cursor.fetchall()
+                        result = cursor.fetchone()
+                        result = dict(result)
                         if len(result) == 0:
                             sql = """INSERT INTO `users` 
                                                  (`fio`,
@@ -59,9 +61,29 @@ async def login(user: User):
                                                  user_data['mail'],
                                                  1,
                                                  1))
+                            scopes = ['user:create',
+                                      'user:read',
+                                      'user:update',
+                                      'user:delete']
+                        else:
+                            user_role = result.get('role')
+                            if user_role == 1:
+                                scopes = ['admin']
+                            elif user_role == 2:
+                                scopes = ['cheesemaster:create',
+                                          'cheesemaster:read',
+                                          'cheesemaster:update',
+                                          'cheesemaster:delete']
+                            elif user_role == 3:
+                                scopes = ['user:create',
+                                          'user:read',
+                                          'user:update',
+                                          'user:delete']
+
                     connection.commit()
                 access_token_expires = timedelta(minutes=JWT_EXPIRE_MINUTES)
-                access_token = create_access_token(data={'sub': user.get('name')}, expires_delta=access_token_expires)
+                access_token = create_access_token(data={'sub': user.get('name'),
+                                                         'scopes': scopes}, expires_delta=access_token_expires)
                 return {'access_token': access_token, 'token_type': 'bearer'}
             else:
                 raise HTTPException(
@@ -72,7 +94,6 @@ async def login(user: User):
         except Exception as err:
             logger.error(f'Error: {str(err)}')
             raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
-
 
 
 @router.get('/check')
