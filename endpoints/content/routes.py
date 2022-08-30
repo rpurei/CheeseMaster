@@ -25,16 +25,16 @@ async def add_content(content: ContentIn):
             with connection.cursor() as cursor:
                 try:
                     sql = """INSERT INTO `order_contents` 
-                                        (`COMMENT`,
-                                        `DATE`,
-                                        `ORDER_ID`,
-                                        `PRODUCT_ID`,
-                                        `MANUFACTURER_ID`,
-                                        `WAREHOUSE_ID`,
-                                        `AMOUNT`,
-                                        `PRICE_ID`,
-                                        `STATUS`,
-                                        `AUTHOR_ID`) 
+                                        (`comment`,
+                                        `date`,
+                                        `order_id`,
+                                        `product_id`,
+                                        `manufacturer_id`,
+                                        `warehouse_id`,
+                                        `amount`,
+                                        `price_id`,
+                                        `status`,
+                                        `author_id`) 
                              VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
                     cursor.execute(sql, (content.comment,
                                          content.date,
@@ -74,17 +74,17 @@ async def update_content(content: ContentIn, content_id: int):
                     result = cursor.fetchall()
                     if len(result) > 0:
                         sql = """UPDATE `order_contents` 
-                                 SET `COMMENT`='{0}',
-                                     `DATE`='{1}',
-                                     `ORDER_ID`='{2}',
-                                     `PRODUCT_ID`='{3}',
-                                     `MANUFACTURER_ID`='{4}',
-                                     `WAREHOUSE_ID`='{5}',
-                                     `AMOUNT`='{6}',
-                                     `PRICE_ID`='{7}',
-                                     `STATUS`='{8}',
-                                     `AUTHOR_ID`='{9}' 
-                                 WHERE `ID`={10}""".format(
+                                 SET `comment`='{0}',
+                                     `date`='{1}',
+                                     `order_id`='{2}',
+                                     `product_id`='{3}',
+                                     `manufacturer_id`='{4}',
+                                     `warehouse_id`='{5}',
+                                     `amount`='{6}',
+                                     `price_id`='{7}',
+                                     `status`='{8}',
+                                     `author_id`='{9}' 
+                                 WHERE `id`='{10}'""".format(
                             content.comment,
                             content.date,
                             content.order_id,
@@ -124,15 +124,15 @@ async def delete_content(content_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = 'SELECT `ID` FROM `order_contents` WHERE `ID`={0}'.format(content_id)
+                    sql = """SELECT `ID` FROM `order_contents` WHERE `id`='{0}'""".format(content_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     if len(result) > 0:
-                        sql = 'DELETE FROM `order_contents` WHERE `ID`={0}'.format(content_id)
+                        sql = """DELETE FROM `order_contents` WHERE `id`='{0}'""".format(content_id)
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
-                                            content={"detail": f'Content with ID: {content_id} not found.'},)
+                                            content={'detail': f'Content with ID: {content_id} not found.'},)
                 except Exception as err:
                     err_message = ''
                     for err_item in err.args:
@@ -188,24 +188,24 @@ async def get_content(content_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = 'SELECT * FROM `order_contents` WHERE `ID`={0}'.format(content_id)
+                    sql = """SELECT * FROM `order_contents` WHERE `id`='{0}'""".format(content_id)
                     cursor.execute(sql)
                     result = cursor.fetchone()
                     result = dict(result)
                     if len(result) > 0:
-                        return {'id': result.get('ID'),
-                                'date': result.get('DATE'),
-                                'order_id': result.get('ORDER_ID'),
-                                'product_id': result.get('PRODUCT_ID'),
-                                'manufacturer_id': result.get('MANUFACTURER_ID'),
-                                'warehouse_id': result.get('WAREHOUSE_ID'),
-                                'amount': result.get('AMOUNT'),
-                                'price_id': result.get('PRICE_ID'),
-                                'status': result.get('STATUS'),
-                                'comment': result.get('COMMENT'),
-                                'author_id': result.get('AUTHOR_ID'),
-                                'created': result.get('CREATED'),
-                                'updated': result.get('UPDATED')}
+                        return {'id': result.get('id'),
+                                'date': result.get('date'),
+                                'order_id': result.get('order_id'),
+                                'product_id': result.get('product_id'),
+                                'manufacturer_id': result.get('manufacturer_id'),
+                                'warehouse_id': result.get('warehouse_id'),
+                                'amount': result.get('amount'),
+                                'price_id': result.get('price_id'),
+                                'status': result.get('status'),
+                                'comment': result.get('comment'),
+                                'author_id': result.get('author_id'),
+                                'created': result.get('created'),
+                                'updated': result.get('updated')}
                     else:
                         return JSONResponse(status_code=404,
                                             content={"detail": f'Content with ID: {content_id} not found.'},)

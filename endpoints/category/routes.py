@@ -1,7 +1,9 @@
 from app_logger import logger
 from config import DB_HOST, DB_NAME, DB_USER, DB_PASSWORD
 from .models import CategoryIn, CategoryOut
-from fastapi import APIRouter, status, HTTPException
+from ..users.models import User
+from ..users.utils import get_current_user
+from fastapi import APIRouter, status, HTTPException, Depends
 from fastapi.responses import JSONResponse
 import pymysql.cursors
 
@@ -14,7 +16,7 @@ router = APIRouter(
 
 
 @router.post('/', status_code=status.HTTP_201_CREATED)
-async def add_category(category: CategoryIn):
+async def add_category(category: CategoryIn):       #, current_user=Depends(get_current_user)
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -25,10 +27,10 @@ async def add_category(category: CategoryIn):
             with connection.cursor() as cursor:
                 try:
                     sql = """INSERT INTO `categories` 
-                                         (`NAME`,
+                                         (`name`,
                                          `active`,
-                                         `COMMENT`,
-                                         `AUTHOR_ID`) 
+                                         `comment`,
+                                         `author_id`) 
                              VALUES (%s,%s,%s,%s)"""
                     cursor.execute(sql, (category.name,
                                          category.active,
@@ -60,11 +62,11 @@ async def update_category(category: CategoryIn, category_id: int):
                     result = cursor.fetchall()
                     if len(result) > 0:
                         sql = """UPDATE `categories` 
-                                 SET `NAME`='{0}',
+                                 SET `name`='{0}',
                                      `active`='{1}',
-                                     `COMMENT`='{2}',
-                                     `AUTHOR_ID`='{3}' 
-                                 WHERE `ID`={4}""".format(category.name,
+                                     `comment`='{2}',
+                                     `author_id`='{3}' 
+                                 WHERE `id`='{4}'""".format(category.name,
                                                           category.active,
                                                           category.comment,
                                                           category.author_id,
@@ -94,11 +96,11 @@ async def delete_category(category_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = 'SELECT `ID` FROM `categories` WHERE `ID`={0}'.format(category_id)
+                    sql = """SELECT `ID` FROM `categories` WHERE `id`='{0}'""".format(category_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     if len(result) > 0:
-                        sql = 'DELETE FROM `categories` WHERE `ID`={0}'.format(category_id)
+                        sql = """DELETE FROM `categories` WHERE `id`='{0}'""".format(category_id)
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
@@ -149,18 +151,18 @@ async def get_category(category_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = 'SELECT * FROM `categories` WHERE `ID`={0}'.format(category_id)
+                    sql = """SELECT * FROM `categories` WHERE `id`='{0}'""".format(category_id)
                     cursor.execute(sql)
                     result = cursor.fetchone()
                     result = dict(result)
                     if len(result) > 0:
-                        return {'id': result.get('ID'),
-                                'name': result.get('NAME'),
-                                'active': result.get('ACTIVE'),
-                                'comment': result.get('COMMENT'),
-                                'author_id': result.get('AUTHOR_ID'),
-                                'created': result.get('CREATED'),
-                                'updated': result.get('UPDATED')
+                        return {'id': result.get('id'),
+                                'name': result.get('name'),
+                                'active': result.get('active'),
+                                'comment': result.get('comment'),
+                                'author_id': result.get('author_id'),
+                                'created': result.get('created'),
+                                'updated': result.get('updated')
                                 }
                     else:
                         return JSONResponse(status_code=404,

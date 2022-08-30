@@ -24,16 +24,16 @@ async def add_pickpoint(pickpoint: PickpointIn):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = """INSERT INTO `pickpoints` (`NAME`,
-                                                       `ADDRESS`,
-                                                       `WORKHOURS`,
-                                                       `PHONE`,
-                                                       `COMMENT`,
-                                                       `LINK_YANDEX`,
-                                                       `LINK_POINT`,
-                                                       `MAP_FRAME`,
-                                                       `ACTIVE`,
-                                                       `AUTHOR_ID`) 
+                    sql = """INSERT INTO `pickpoints` (`name`,
+                                                       `address`,
+                                                       `workhours`,
+                                                       `phone`,
+                                                       `comment`,
+                                                       `link_yandex`,
+                                                       `link_point`,
+                                                       `map_frame`,
+                                                       `active`,
+                                                       `author_id`) 
                              VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
                     cursor.execute(sql, (pickpoint.name,
                                          pickpoint.address,
@@ -67,22 +67,22 @@ async def update_pickpoint(pickpoint: PickpointIn, pickpoint_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = "SELECT `ID` FROM `pickpoints` WHERE `ID`={0}".format(pickpoint_id)
+                    sql = "SELECT `id` FROM `pickpoints` WHERE `id`={0}".format(pickpoint_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     if len(result) > 0:
                         sql = """UPDATE `pickpoints` 
-                                 SET `NAME`='{0}',
-                                     `ADDRESS`='{1}',
-                                     `WORKHOURS`='{2}',
-                                     `PHONE`='{3}',
-                                     `COMMENT`='{4}',
-                                     `LINK_YANDEX`='{5}',
-                                     `LINK_POINT`='{6}',
-                                     `MAP_FRAME`='{7}',
-                                     `ACTIVE`='{8}',
-                                     `AUTHOR_ID`='{9}' 
-                                 WHERE `ID`={10}""".format(pickpoint.name,
+                                 SET `name`='{0}',
+                                     `address`='{1}',
+                                     `workhours`='{2}',
+                                     `phone`='{3}',
+                                     `comment`='{4}',
+                                     `link_yandex`='{5}',
+                                     `link_point`='{6}',
+                                     `map_frame`='{7}',
+                                     `active`='{8}',
+                                     `author_id`='{9}' 
+                                 WHERE `id`='{10}'""".format(pickpoint.name,
                                                            pickpoint.address,
                                                            pickpoint.workhours,
                                                            pickpoint.phone,
@@ -96,7 +96,7 @@ async def update_pickpoint(pickpoint: PickpointIn, pickpoint_id: int):
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
-                                            content={"detail": f'Pickpoint with ID: {pickpoint_id} not found.'}, )
+                                            content={'detail': f'Pickpoint with ID: {pickpoint_id} not found.'}, )
                 except Exception as err:
                     logger.error(f'Error: {str(err)}')
                     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
@@ -118,11 +118,11 @@ async def delete_pickpoint(pickpoint_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = 'SELECT `ID` FROM `pickpoints` WHERE `ID`={0}'.format(pickpoint_id)
+                    sql = """SELECT `id` FROM `pickpoints` WHERE `id`='{0}'""".format(pickpoint_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     if len(result) > 0:
-                        sql = 'DELETE FROM `pickpoints` WHERE `ID`={0}'.format(pickpoint_id)
+                        sql = """DELETE FROM `pickpoints` WHERE `id`='{0}'""".format(pickpoint_id)
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
@@ -171,28 +171,28 @@ async def get_pickpoint(pickpoint_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = 'SELECT * FROM `pickpoints` WHERE `ID`={0}'.format(pickpoint_id)
+                    sql = """SELECT * FROM `pickpoints` WHERE `id`='{0}'""".format(pickpoint_id)
                     cursor.execute(sql)
                     result = cursor.fetchone()
                     result = dict(result)
                     if len(result) > 0:
-                        return {'id': result.get('ID'),
-                                'name': result.get('NAME'),
-                                'address': result.get('ADDRESS'),
-                                'workhours': result.get('WORKHOURS'),
-                                'phone': result.get('PHONE'),
-                                'link_yandex': result.get('LINK_YANDEX'),
-                                'link_point': result.get('LINK_POINT'),
-                                'map_frame': result.get('MAP_FRAME'),
-                                'active': result.get('ACTIVE'),
-                                'comment': result.get('COMMENT'),
-                                'author_id': result.get('AUTHOR_ID'),
-                                'created': result.get('CREATED'),
-                                'updated': result.get('UPDATED')
+                        return {'id': result.get('id'),
+                                'name': result.get('name'),
+                                'address': result.get('address'),
+                                'workhours': result.get('workhours'),
+                                'phone': result.get('phone'),
+                                'link_yandex': result.get('link_yandex'),
+                                'link_point': result.get('link_point'),
+                                'map_frame': result.get('map_frame'),
+                                'active': result.get('active'),
+                                'comment': result.get('comment'),
+                                'author_id': result.get('author_id'),
+                                'created': result.get('created'),
+                                'updated': result.get('updated')
                                 }
                     else:
                         return JSONResponse(status_code=404,
-                                            content={"detail": f'Pickpoint with ID: {pickpoint_id} not found.'},)
+                                            content={'detail': f'Pickpoint with ID: {pickpoint_id} not found.'},)
                 except Exception as err:
                     logger.error(f'Error: {str(err)}')
                     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')

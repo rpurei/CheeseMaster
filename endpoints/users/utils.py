@@ -16,7 +16,7 @@ def ldap_register(address, bind_username, bind_password, user_login):
     conn.protocol_version = 3
     conn.set_option(ldap.OPT_REFERRALS, 0)
     basedn = LDAP_BASE_DN
-    searchFilter = f'(&(objectCategory=person)(objectClass=user)(sAMAccountName={user_login}))'
+    searchFilter = f'(&(objectCategory=person)(objectClass=user)(mail={user_login}))'
     searchAttribute = ['mail', 'cn']
     searchScope = ldap.SCOPE_SUBTREE
     register_result = {'status': '', 'login': '', 'mail': '', 'full_name': ''}
@@ -126,6 +126,6 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     return user
 
 
-# if __name__ == '__main__':
-#     print(ldap_register(LDAP_SERVER_NAME, LDAP_BIND_USER_NAME, LDAP_BIND_USER_PASSWORD, 'purey.rp'))
-#     print(ldap_auth(LDAP_SERVER_NAME, '', ''))
+#if __name__ == '__main__':
+    # print(ldap_register(LDAP_SERVER_NAME, LDAP_BIND_USER_NAME, LDAP_BIND_USER_PASSWORD, 'purey.rp@zdmail.ru'))
+    # print(ldap_auth(LDAP_SERVER_NAME, '', ''))

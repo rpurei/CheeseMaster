@@ -24,12 +24,12 @@ async def add_warehouse(warehouse: WarehouseIn):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = """INSERT INTO `warehouses` (`PRODUCT_ID`,
-                                                       `AMOUNT`,
-                                                       `ITEM_MEASURE`,
-                                                       `RESERVE`,
-                                                       `ACTIVE`,
-                                                       `AUTHOR_ID`) 
+                    sql = """INSERT INTO `warehouses` (`product_id`,
+                                                       `amount`,
+                                                       `item_measure`,
+                                                       `reserve`,
+                                                       `active`,
+                                                       `author_id`) 
                              VALUES (%s,%s,%s,%s,%s,%s)"""
                     cursor.execute(sql, (warehouse.product_id,
                                          warehouse.amount,
@@ -69,13 +69,13 @@ async def update_warehouse(warehouse: WarehouseIn, warehouse_id: int):
                     result = cursor.fetchall()
                     if len(result) > 0:
                         sql = """UPDATE `warehouses` 
-                                 SET `PRODUCT_ID`='{0}',
-                                     `AMOUNT`='{1}',
-                                     `ITEM_MEASURE`='{2}',
-                                     `RESERVE`='{3}',
-                                     `ACTIVE`='{4}',
-                                     `AUTHOR_ID`='{5}' 
-                                 WHERE `ID`={6}""".format(warehouse.product_id,
+                                 SET `product_id`='{0}',
+                                     `amount`='{1}',
+                                     `item_measure`='{2}',
+                                     `reserve`='{3}',
+                                     `active`='{4}',
+                                     `author_id`='{5}' 
+                                 WHERE `id`='{6}'""".format(warehouse.product_id,
                                                           warehouse.amount,
                                                           warehouse.item_measure,
                                                           warehouse.reserve,
@@ -111,11 +111,11 @@ async def delete_warehouse(warehouse_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = 'SELECT `ID` FROM `warehouses` WHERE `ID`={0}'.format(warehouse_id)
+                    sql = """SELECT `id` FROM `warehouses` WHERE `id`='{0}'""".format(warehouse_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     if len(result) > 0:
-                        sql = 'DELETE FROM `warehouses` WHERE `ID`={0}'.format(warehouse_id)
+                        sql = """DELETE FROM `warehouses` WHERE `id`='{0}'""".format(warehouse_id)
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
@@ -167,21 +167,21 @@ async def get_warehouse(warehouse_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = 'SELECT * FROM `warehouses` WHERE `ID`={0}'.format(warehouse_id)
+                    sql = """SELECT * FROM `warehouses` WHERE `id`='{0}'""".format(warehouse_id)
                     cursor.execute(sql)
                     result = cursor.fetchone()
                     result = dict(result)
                     if len(result) > 0:
                         return {
-                                    'id': result.get('ID'),
-                                    'product_id': result.get('PRODUCT_ID'),
-                                    'amount': result.get('AMOUNT'),
-                                    'item_measure': result.get('ITEM_MEASURE'),
-                                    'reserve': result.get('RESERVE'),
-                                    'active': result.get('ACTIVE'),
-                                    'author_id': result.get('AUTHOR_ID'),
-                                    'created': result.get('CREATED'),
-                                    'updated': result.get('UPDATED')
+                                    'id': result.get('id'),
+                                    'product_id': result.get('product_id'),
+                                    'amount': result.get('amount'),
+                                    'item_measure': result.get('item_measure'),
+                                    'reserve': result.get('reserve'),
+                                    'active': result.get('active'),
+                                    'author_id': result.get('author_id'),
+                                    'created': result.get('created'),
+                                    'updated': result.get('updated')
                         }
                     else:
                         return JSONResponse(status_code=404,

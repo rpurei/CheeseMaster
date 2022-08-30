@@ -24,12 +24,12 @@ async def add_order(order: OrderIn):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = """INSERT INTO `orders` (`COMMENT`,
-                                                   `ORDER_DATE`,
-                                                   `STATUS`,
-                                                   `DELIVERY_DATE`,
-                                                   `PAYMENT_TYPE`,
-                                                   `AUTHOR_ID`) 
+                    sql = """INSERT INTO `orders` (`comment`,
+                                                   `order_date`,
+                                                   `status`,
+                                                   `delivery_date`,
+                                                   `payment_type`,
+                                                   `author_id`) 
                              VALUES (%s,%s,%s,%s,%s,%s)"""
                     cursor.execute(sql, (order.comment,
                                          order.date,
@@ -59,19 +59,19 @@ async def update_order(order: OrderIn, order_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = "SELECT `ID` FROM `orders` WHERE `ID`={0}".format(order_id)
+                    sql = "SELECT `id` FROM `orders` WHERE `id`={0}".format(order_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     if len(result) > 0:
                         sql = """UPDATE `orders` 
                                  SET 
-                                 `COMMENT`='{0}',
-                                 `ORDER_DATE`='{1}',
-                                 `STATUS`='{2}',
-                                 `DELIVERY_DATE`='{3}',
-                                 `PAYMENT_TYPE`='{4}',
-                                 `AUTHOR_ID`='{5}' 
-                                 WHERE `ID`={6}""".format(order.comment,
+                                 `comment`='{0}',
+                                 `order_date`='{1}',
+                                 `status`='{2}',
+                                 `delivery_date`='{3}',
+                                 `payment_type`='{4}',
+                                 `author_id`='{5}' 
+                                 WHERE `id`='{6}'""".format(order.comment,
                                                           order.date,
                                                           order.status,
                                                           order.delivery_date,
@@ -103,11 +103,11 @@ async def delete_order(order_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = 'SELECT `ID` FROM `orders` WHERE `ID`={0}'.format(order_id)
+                    sql = """SELECT `ID` FROM `orders` WHERE `id`='{0}'""".format(order_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     if len(result) > 0:
-                        sql = 'DELETE FROM `orders` WHERE `ID`={0}'.format(order_id)
+                        sql = """DELETE FROM `orders` WHERE `id`='{0}'""".format(order_id)
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
@@ -156,21 +156,21 @@ async def get_order(order_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = 'SELECT * FROM `orders` WHERE `ID`={0}'.format(order_id)
+                    sql = """SELECT * FROM `orders` WHERE `id`='{0}'""".format(order_id)
                     cursor.execute(sql)
                     result = cursor.fetchone()
                     result = dict(result)
                     if len(result) > 0:
                         return {
-                                    'id': result.get('ID'),
-                                    'date': result.get('ORDER_DATE'),
-                                    'delivery_date': result.get('DELIVERY_DATE'),
-                                    'payment_type': result.get('PAYMENT_TYPE'),
-                                    'status': result.get('STATUS'),
-                                    'comment': result.get('COMMENT'),
-                                    'author_id': result.get('AUTHOR_ID'),
-                                    'created': result.get('CREATED'),
-                                    'updated': result.get('UPDATED')
+                                    'id': result.get('id'),
+                                    'date': result.get('order_date'),
+                                    'delivery_date': result.get('delivery_date'),
+                                    'payment_type': result.get('payment_type'),
+                                    'status': result.get('status'),
+                                    'comment': result.get('comment'),
+                                    'author_id': result.get('author_id'),
+                                    'created': result.get('created'),
+                                    'updated': result.get('updated')
                                }
                     else:
                         return JSONResponse(status_code=404,

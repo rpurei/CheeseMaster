@@ -24,14 +24,14 @@ async def add_production(production: ProductionIn):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = """INSERT INTO `productions` (`PRODUCT_ID`,
-                                                        `MANUFACTURER_ID`,
-                                                        `WAREHOUSE_ID`,
-                                                        `AMOUNT`,
-                                                        `ITEM_MEASURE`,
-                                                        `DATE`,
-                                                        `COMMENT`,
-                                                        `AUTHOR_ID`) 
+                    sql = """INSERT INTO `productions` (`product_id`,
+                                                        `manufacturer_id`,
+                                                        `warehouse_id`,
+                                                        `amount`,
+                                                        `item_measure`,
+                                                        `date`,
+                                                        `comment`,
+                                                        `author_id`) 
                             VALUES (%s,%s,%s,%s,%s,%s,%s,%s)"""
                     cursor.execute(sql, (production.product_id,
                                          production.manufacturer_id,
@@ -67,15 +67,15 @@ async def update_production(production: ProductionIn, production_id: int):
                     result = cursor.fetchall()
                     if len(result) > 0:
                         sql = """UPDATE `productions` 
-                                 SET `PRODUCT_ID`='{0}',
-                                     `MANUFACTURER_ID`='{1}',
-                                     `WAREHOUSE_ID`='{2}',
-                                     `AMOUNT`='{3}',
-                                     `ITEM_MEASURE`='{4}',
-                                     `DATE`='{5}',
-                                     `COMMENT`='{6}',
-                                     `AUTHOR_ID`='{7}' 
-                                 WHERE `ID`={8}""".format(production.product_id,
+                                 SET `product_id`='{0}',
+                                     `manufacturer_id`='{1}',
+                                     `warehouse_id`='{2}',
+                                     `amount`='{3}',
+                                     `item_measure`='{4}',
+                                     `date`='{5}',
+                                     `comment`='{6}',
+                                     `author_id`='{7}' 
+                                 WHERE `id`='{8}'""".format(production.product_id,
                                                             production.manufacturer_id,
                                                             production.warehouse_id,
                                                             production.amount,
@@ -109,11 +109,11 @@ async def delete_production(production_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = 'SELECT `ID` FROM `productions` WHERE `ID`={0}'.format(production_id)
+                    sql = """SELECT `id` FROM `productions` WHERE `id`='{0}'""".format(production_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     if len(result) > 0:
-                        sql = 'DELETE FROM `productions` WHERE `ID`={0}'.format(production_id)
+                        sql = """DELETE FROM `productions` WHERE `id`='{0}'""".format(production_id)
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
@@ -162,22 +162,22 @@ async def get_production(production_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = 'SELECT * FROM `productions` WHERE `ID`={0}'.format(production_id)
+                    sql = """SELECT * FROM `productions` WHERE `id`='{0}'""".format(production_id)
                     cursor.execute(sql)
                     result = cursor.fetchone()
                     result = dict(result)
                     if len(result) > 0:
-                        return {'id': result.get('ID'),
-                                'date': result.get('DATE'),
-                                'product_id': result.get('PRODUCT_ID'),
-                                'manufacturer_id': result.get('MANUFACTURER_ID'),
-                                'warehouse_id': result.get('WAREHOUSE_ID'),
-                                'amount': result.get('AMOUNT'),
-                                'item_measure': result.get('ITEM_MEASURE'),
-                                'comment': result.get('COMMENT'),
-                                'author_id': result.get('AUTHOR_ID'),
-                                'created': result.get('CREATED'),
-                                'updated': result.get('UPDATED')}
+                        return {'id': result.get('id'),
+                                'date': result.get('date'),
+                                'product_id': result.get('product_id'),
+                                'manufacturer_id': result.get('manufacturer_id'),
+                                'warehouse_id': result.get('warehouse_id'),
+                                'amount': result.get('amount'),
+                                'item_measure': result.get('item_measure'),
+                                'comment': result.get('comment'),
+                                'author_id': result.get('author_id'),
+                                'created': result.get('created'),
+                                'updated': result.get('updated')}
                     else:
                         return JSONResponse(status_code=404,
                                             content={'detail': f'Production with ID: {production_id} not found.'},)

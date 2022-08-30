@@ -24,7 +24,7 @@ async def add_manufacturer(manufacturer: ManufacturerIn):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = 'INSERT INTO `manufacturers` (`NAME`,`ADDRESS`,`AUTHOR_ID`) VALUES (%s,%s,%s)'
+                    sql = 'INSERT INTO `manufacturers` (`name`,`address`,`author_id`) VALUES (%s,%s,%s)'
                     cursor.execute(sql, (manufacturer.name,
                                          manufacturer.address,
                                          manufacturer.author_id
@@ -59,10 +59,10 @@ async def update_manufacturer(manufacturer: ManufacturerIn, manufacturer_id: int
                     result = cursor.fetchall()
                     if len(result) > 0:
                         sql = """UPDATE `manufacturers` 
-                                 SET `NAME`='{0}',
-                                     `ADDRESS`='{1}',
-                                     `AUTHOR_ID`='{2}' 
-                                 WHERE `ID`='{3}'""".format(manufacturer.name,
+                                 SET `name`='{0}',
+                                     `address`='{1}',
+                                     `author_id`='{2}' 
+                                 WHERE `id`='{3}'""".format(manufacturer.name,
                                                             manufacturer.address,
                                                             manufacturer.author_id,
                                                             manufacturer_id)
@@ -95,11 +95,11 @@ async def delete_manufacturer(manufacturer_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = 'SELECT `ID` FROM `manufacturers` WHERE `ID`={0}'.format(manufacturer_id)
+                    sql = """SELECT `ID` FROM `manufacturers` WHERE `id`='{0}'""".format(manufacturer_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     if len(result) > 0:
-                        sql = 'DELETE FROM `manufacturers` WHERE `ID`={0}'.format(manufacturer_id)
+                        sql = """DELETE FROM `manufacturers` WHERE `id`='{0}'""".format(manufacturer_id)
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
@@ -148,18 +148,18 @@ async def get_manufacturer(manufacturer_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = 'SELECT * FROM `manufacturers` WHERE `ID`={0}'.format(manufacturer_id)
+                    sql = """SELECT * FROM `manufacturers` WHERE `id`='{0}'""".format(manufacturer_id)
                     cursor.execute(sql)
                     result = cursor.fetchone()
                     result = dict(result)
                     if len(result) > 0:
                         return {
-                                    'id': result.get('ID'),
-                                    'name': result.get('NAME'),
-                                    'address': result.get('ADDRESS'),
-                                    'author_id': result.get('AUTHOR_ID'),
-                                    'created': result.get('CREATED'),
-                                    'updated': result.get('UPDATED')
+                                    'id': result.get('id'),
+                                    'name': result.get('name'),
+                                    'address': result.get('address'),
+                                    'author_id': result.get('author_id'),
+                                    'created': result.get('created'),
+                                    'updated': result.get('updated')
                                }
                     else:
                         return JSONResponse(status_code=404,

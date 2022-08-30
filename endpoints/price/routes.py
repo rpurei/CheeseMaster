@@ -24,10 +24,10 @@ async def add_price(price: PriceIn):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = """INSERT INTO `prices` (`PRODUCT_ID`,
-                                                   `ITEM_MEASURE`,
-                                                   `ITEM_PRICE`,
-                                                   `AUTHOR_ID`) 
+                    sql = """INSERT INTO `prices` (`product_id`,
+                                                   `item_measure`,
+                                                   `item_price`,
+                                                   `author_id`) 
                              VALUES (%s,%s,%s,%s)"""
                     cursor.execute(sql, (price.product_id,
                                          price.item_measure,
@@ -60,11 +60,11 @@ async def update_price(price: PriceIn, price_id: int):
                     result = cursor.fetchall()
                     if len(result) > 0:
                         sql = """UPDATE `prices` 
-                                 SET `PRODUCT_ID`='{0}',
-                                     `ITEM_MEASURE`='{1}',
-                                     `ITEM_PRICE`='{2}',
-                                     `AUTHOR_ID`='{3}' 
-                                 WHERE `ID`={4}""".format(price.product_id,
+                                 SET `product_id`='{0}',
+                                     `item_measure`='{1}',
+                                     `item_price`='{2}',
+                                     `author_id`='{3}' 
+                                 WHERE `id`='{4}'""".format(price.product_id,
                                                             price.item_measure,
                                                             price.item_price,
                                                             price.author_id,
@@ -94,15 +94,15 @@ async def delete_price(price_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = 'SELECT `ID` FROM `prices` WHERE `ID`={0}'.format(price_id)
+                    sql = """SELECT `id` FROM `prices` WHERE `id`={0}""".format(price_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     if len(result) > 0:
-                        sql = 'DELETE FROM `prices` WHERE `ID`={0}'.format(price_id)
+                        sql = """DELETE FROM `prices` WHERE `id`={0}""".format(price_id)
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
-                                            content={"detail": f'Price with ID: {price_id} not found.'},)
+                                            content={'detail': f'Price with ID: {price_id} not found.'},)
                 except Exception as err:
                     logger.error(f'Error: {str(err)}')
                     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
@@ -147,23 +147,23 @@ async def get_price(price_id: int):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = 'SELECT * FROM `prices` WHERE `ID`={0}'.format(price_id)
+                    sql = """SELECT * FROM `prices` WHERE `id`='{0}'""".format(price_id)
                     cursor.execute(sql)
                     result = cursor.fetchone()
                     result = dict(result)
                     if len(result) > 0:
                         return {
-                                    'id': result.get('ID'),
-                                    'product_id': result.get('PRODUCT_ID'),
-                                    'item_measure': result.get('ITEM_MEASURE'),
-                                    'item_price': result.get('ITEM_PRICE'),
-                                    'author_id': result.get('AUTHOR_ID'),
-                                    'created': result.get('CREATED'),
-                                    'updated': result.get('UPDATED')
+                                    'id': result.get('id'),
+                                    'product_id': result.get('product_id'),
+                                    'item_measure': result.get('item_measure'),
+                                    'item_price': result.get('item_price'),
+                                    'author_id': result.get('author_id'),
+                                    'created': result.get('created'),
+                                    'updated': result.get('updated')
                                }
                     else:
                         return JSONResponse(status_code=404,
-                                            content={"detail": f'Price with ID: {price_id} not found.'},)
+                                            content={'detail': f'Price with ID: {price_id} not found.'},)
                 except Exception as err:
                     err_message = ''
                     for err_item in err.args:
