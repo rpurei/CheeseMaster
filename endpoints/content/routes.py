@@ -6,7 +6,6 @@ from fastapi import APIRouter, status, HTTPException, Security
 from fastapi.responses import JSONResponse
 import pymysql.cursors
 
-
 router = APIRouter(
     prefix='/contents',
     tags=['Content'],
@@ -62,9 +61,9 @@ async def add_content(content: ContentIn, current_user=Security(get_current_user
 
 
 @router.patch('/{content_id}', status_code=status.HTTP_204_NO_CONTENT)
-async def update_content(content: ContentIn, content_id: int, current_user=Security(get_current_user, scopes=['admin',
-                                                                                                        'user:update',
-                                                                                             'cheesemaster:update'])):
+async def update_content(content: ContentIn, content_id: int,
+                         current_user=Security(get_current_user, scopes=['admin', 'user:update',
+                                                                         'cheesemaster:update'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -139,7 +138,7 @@ async def delete_content(content_id: int, current_user=Security(get_current_user
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
-                                            content={'detail': f'Content with ID: {content_id} not found.'},)
+                                            content={'detail': f'Content with ID: {content_id} not found.'}, )
                 except Exception as err:
                     err_message = ''
                     for err_item in err.args:
@@ -217,7 +216,7 @@ async def get_content(content_id: int, current_user=Security(get_current_user, s
                                 'updated': result.get('updated')}
                     else:
                         return JSONResponse(status_code=404,
-                                            content={"detail": f'Content with ID: {content_id} not found.'},)
+                                            content={"detail": f'Content with ID: {content_id} not found.'}, )
                 except Exception as err:
                     logger.error(f'Error: {str(err)}')
                     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')

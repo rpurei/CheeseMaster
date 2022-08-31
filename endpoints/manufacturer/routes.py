@@ -87,7 +87,7 @@ async def update_manufacturer(manufacturer: ManufacturerIn, manufacturer_id: int
 
 
 @router.delete('/{manufacturer_id}', status_code=status.HTTP_200_OK)
-async def delete_manufacturer(manufacturer_id: int, current_user=Security(get_current_user,scopes=['superadmin'])):
+async def delete_manufacturer(manufacturer_id: int, current_user=Security(get_current_user, scopes=['superadmin'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -142,9 +142,10 @@ async def get_manufacturers(current_user=Security(get_current_user, scopes=['adm
 
 
 @router.get('/{manufacturer_id}', status_code=status.HTTP_200_OK, response_model=ManufacturerOut)
-async def get_manufacturer(manufacturer_id: int, current_user=Security(get_current_user, scopes=['admin',
-                                                                                                 'user:read',
-                                                                                                'cheesemaster:read'])):
+async def get_manufacturer(manufacturer_id: int, current_user=Security(get_current_user,
+                                                                       scopes=['admin',
+                                                                               'user:read',
+                                                                               'cheesemaster:read'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,

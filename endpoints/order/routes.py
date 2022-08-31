@@ -6,7 +6,6 @@ from fastapi import APIRouter, status, HTTPException, Security
 from fastapi.responses import JSONResponse
 import pymysql.cursors
 
-
 router = APIRouter(
     prefix='/orders',
     tags=['Order'],
@@ -52,9 +51,10 @@ async def add_order(order: OrderIn, current_user=Security(get_current_user, scop
 
 
 @router.patch('/{order_id}', status_code=status.HTTP_204_NO_CONTENT)
-async def update_order(order: OrderIn, order_id: int, current_user=Security(get_current_user, scopes=['admin',
-                                                                                                      'user:update',
-                                                                                            'cheesemaster:update'])):
+async def update_order(order: OrderIn, order_id: int, current_user=Security(get_current_user,
+                                                                            scopes=['admin',
+                                                                                    'user:update',
+                                                                                    'cheesemaster:update'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -77,12 +77,12 @@ async def update_order(order: OrderIn, order_id: int, current_user=Security(get_
                                  `payment_type`='{4}',
                                  `author_id`='{5}' 
                                  WHERE `id`='{6}'""".format(order.comment,
-                                                          order.date,
-                                                          order.status,
-                                                          order.delivery_date,
-                                                          order.payment_type,
-                                                          order.author_id,
-                                                          order_id)
+                                                            order.date,
+                                                            order.status,
+                                                            order.delivery_date,
+                                                            order.payment_type,
+                                                            order.author_id,
+                                                            order_id)
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
@@ -98,7 +98,7 @@ async def update_order(order: OrderIn, order_id: int, current_user=Security(get_
 
 
 @router.delete('/{order_id}', status_code=status.HTTP_200_OK)
-async def delete_order(order_id: int, current_user=Security(get_current_user,scopes=['superadmin'])):
+async def delete_order(order_id: int, current_user=Security(get_current_user, scopes=['superadmin'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -116,7 +116,7 @@ async def delete_order(order_id: int, current_user=Security(get_current_user,sco
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
-                                            content={"detail": f'Order with ID: {order_id} not found.'},)
+                                            content={"detail": f'Order with ID: {order_id} not found.'}, )
                 except Exception as err:
                     logger.error(f'Error: {str(err)}')
                     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
@@ -171,19 +171,19 @@ async def get_order(order_id: int, current_user=Security(get_current_user, scope
                     result = dict(result)
                     if len(result) > 0:
                         return {
-                                    'id': result.get('id'),
-                                    'date': result.get('order_date'),
-                                    'delivery_date': result.get('delivery_date'),
-                                    'payment_type': result.get('payment_type'),
-                                    'status': result.get('status'),
-                                    'comment': result.get('comment'),
-                                    'author_id': result.get('author_id'),
-                                    'created': result.get('created'),
-                                    'updated': result.get('updated')
-                               }
+                            'id': result.get('id'),
+                            'date': result.get('order_date'),
+                            'delivery_date': result.get('delivery_date'),
+                            'payment_type': result.get('payment_type'),
+                            'status': result.get('status'),
+                            'comment': result.get('comment'),
+                            'author_id': result.get('author_id'),
+                            'created': result.get('created'),
+                            'updated': result.get('updated')
+                        }
                     else:
                         return JSONResponse(status_code=404,
-                                            content={'detail': f'Order with ID: {order_id} not found.'},)
+                                            content={'detail': f'Order with ID: {order_id} not found.'}, )
                 except Exception as err:
                     logger.error(f'Error: {str(err)}')
                     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
