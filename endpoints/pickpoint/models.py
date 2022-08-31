@@ -8,9 +8,9 @@ class PickpointIn(BaseModel):
     address: str
     workhours: str
     phone: str
-    link_yandex: str
-    link_point: str
-    map_frame: str
+    link_yandex: Union[str, None] = None
+    link_point: Union[str, None] = None
+    map_frame: Union[str, None] = None
     active: int = 0
     comment: Union[str, None] = None
     author_id: int
@@ -22,9 +22,9 @@ class PickpointOut(BaseModel):
     address: str
     workhours: str
     phone: str
-    link_yandex: str
-    link_point: str
-    map_frame: str
+    link_yandex: Union[str, None] = None
+    link_point: Union[str, None] = None
+    map_frame: Union[str, None] = None
     active: int = 0
     comment: Union[str, None] = None
     author_id: int
