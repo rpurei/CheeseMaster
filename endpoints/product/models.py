@@ -5,7 +5,7 @@ from typing import Union
 
 class ProductIn(BaseModel):
     name: str
-    active: bool
+    active: int
     category_id: int
     comment: Union[str, None] = None
     description: Union[str, None] = None
@@ -17,7 +17,7 @@ class ProductIn(BaseModel):
 class ProductOut(BaseModel):
     id: int
     name: str
-    active: bool
+    active: int
     category_id: int
     comment: Union[str, None] = None
     description: Union[str, None] = None

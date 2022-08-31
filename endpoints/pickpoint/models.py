@@ -11,7 +11,7 @@ class PickpointIn(BaseModel):
     link_yandex: str
     link_point: str
     map_frame: str
-    active: bool = 0
+    active: int = 0
     comment: Union[str, None] = None
     author_id: int
 
@@ -25,7 +25,7 @@ class PickpointOut(BaseModel):
     link_yandex: str
     link_point: str
     map_frame: str
-    active: bool = 0
+    active: int = 0
     comment: Union[str, None] = None
     author_id: int
     created: datetime.datetime

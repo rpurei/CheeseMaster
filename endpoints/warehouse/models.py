@@ -7,7 +7,7 @@ class WarehouseIn(BaseModel):
     amount: float
     item_measure: str
     reserve: float
-    active: bool
+    active: int
     author_id: int
 
 
@@ -17,7 +17,7 @@ class WarehouseOut(BaseModel):
     amount: float
     item_measure: str
     reserve: float
-    active: bool
+    active: int
     author_id: int
     created: datetime.datetime
     updated: datetime.datetime = None
