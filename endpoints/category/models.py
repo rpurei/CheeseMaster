@@ -5,7 +5,7 @@ import datetime
 
 class CategoryIn(BaseModel):
     name: str
-    active: bool = 0
+    active: int = 0
     comment: Union[str, None] = None
     author_id: int
 
@@ -13,7 +13,7 @@ class CategoryIn(BaseModel):
 class CategoryOut(BaseModel):
     id: int
     name: str
-    active: bool = 0
+    active: int = 0
     comment: Union[str, None] = None
     author_id: int
     created: datetime.datetime

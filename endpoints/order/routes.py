@@ -98,7 +98,7 @@ async def update_order(order: OrderIn, order_id: int, current_user=Security(get_
 
 
 @router.delete('/{order_id}', status_code=status.HTTP_200_OK)
-async def delete_order(order_id: int):
+async def delete_order(order_id: int, current_user=Security(get_current_user,scopes=['superadmin'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,

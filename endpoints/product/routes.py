@@ -103,7 +103,7 @@ async def update_product(product: ProductIn, product_id: int, current_user=Secur
 
 
 @router.delete('/{product_id}', status_code=status.HTTP_200_OK)
-async def delete_product(product_id: int):
+async def delete_product(product_id: int, current_user=Security(get_current_user,scopes=['superadmin'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,

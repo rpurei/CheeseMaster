@@ -19,6 +19,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl='login',
                                              'user:read': 'Read items',
                                              'user:update': 'Update items',
                                              'user:delete': 'Delete items',
+                                             'superadmin': 'Superadmin access'
                                              })
 
 

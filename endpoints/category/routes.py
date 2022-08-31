@@ -86,7 +86,7 @@ async def update_category(category: CategoryIn, category_id: int):              
 
 
 @router.delete('/{category_id}', status_code=status.HTTP_200_OK)
-async def delete_category(category_id: int):
+async def delete_category(category_id: int, current_user=Security(get_current_user,scopes=['superadmin'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,

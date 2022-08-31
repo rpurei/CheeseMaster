@@ -102,7 +102,7 @@ async def update_production(production: ProductionIn, production_id: int, curren
 
 
 @router.delete('/{production_id}', status_code=status.HTTP_200_OK)
-async def delete_production(production_id: int):
+async def delete_production(production_id: int, current_user=Security(get_current_user,scopes=['superadmin'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
