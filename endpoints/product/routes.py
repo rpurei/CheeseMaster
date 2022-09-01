@@ -93,7 +93,7 @@ async def update_product(product: ProductIn, product_id: int):
                                      `category_id`='{2}',
                                      `description`='{3}',
                                      `comment`='{4}',
-                                     `author_id`='{5}',
+                                     `author_id`='{5}'
                                  WHERE `id`='{6}'""".format(product.name,
                                                             product.active,
                                                             product.category_id,
