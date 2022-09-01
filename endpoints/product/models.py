@@ -10,8 +10,8 @@ class ProductIn(BaseModel):
     comment: Union[str, None] = None
     description: Union[str, None] = None
     author_id: int
-    image: str
-    ext: str
+    image: Union[str, None] = None
+    ext: Union[str, None] = None
 
 
 class ProductOut(BaseModel):

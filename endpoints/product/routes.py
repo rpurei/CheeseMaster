@@ -68,7 +68,7 @@ async def update_product(product: ProductIn, product_id: int):
                     sql = "SELECT `ID` FROM `products` WHERE `ID`={0}".format(product_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
-                    if len(result) > 0:
+                    if len(result) > 0 and product.image is not None and product.ext is not None:
                         product_image_path = image_processing(product.image, product.category_id, product.ext)
                         sql = """UPDATE `products` 
                                  SET `name`='{0}',
@@ -86,10 +86,25 @@ async def update_product(product: ProductIn, product_id: int):
                                                           product.author_id,
                                                           product_image_path,
                                                           product_id)
-                        cursor.execute(sql)
+                    elif len(result) > 0 and product.image is None and product.ext is None:
+                        sql = """UPDATE `products` 
+                                 SET `name`='{0}',
+                                     `active`='{1}',
+                                     `category_id`='{2}',
+                                     `description`='{3}',
+                                     `comment`='{4}',
+                                     `author_id`='{5}',
+                                 WHERE `id`='{6}'""".format(product.name,
+                                                            product.active,
+                                                            product.category_id,
+                                                            product.description,
+                                                            product.comment,
+                                                            product.author_id,
+                                                            product_id)
                     else:
                         return JSONResponse(status_code=404,
                                             content={'detail': f'Product with ID: {product_id} not found.'}, )
+                    cursor.execute(sql)
                 except Exception as err:
                     err_message = ''
                     for err_item in err.args:
