@@ -41,6 +41,7 @@
 # 	`product_id` INT NOT NULL,
 # 	`item_measure` TEXT NOT NULL,
 # 	`item_price` FLOAT NOT NULL,
+#    `active` BOOL DEFAULT FALSE,
 # 	`created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 # 	`updated` DATETIME ON UPDATE CURRENT_TIMESTAMP,
 # 	`author_id` INT NOT NULL DEFAULT 1,

@@ -6,6 +6,7 @@ class PriceIn(BaseModel):
     product_id: int
     item_measure: str
     item_price: float
+    active: int
     author_id: int
 
 
@@ -14,6 +15,7 @@ class PriceOut(BaseModel):
     product_id: int
     item_measure: str
     item_price: float
+    active: int
     author_id: int
     created: datetime.datetime
     updated: datetime.datetime = None

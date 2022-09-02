@@ -29,11 +29,13 @@ async def add_price(price: PriceIn):
                     sql = """INSERT INTO `prices` (`product_id`,
                                                    `item_measure`,
                                                    `item_price`,
+                                                   `active`,
                                                    `author_id`) 
-                             VALUES (%s,%s,%s,%s)"""
+                             VALUES (%s,%s,%s,%s,%s)"""
                     cursor.execute(sql, (price.product_id,
                                          price.item_measure,
                                          price.item_price,
+                                         price.active,
                                          price.author_id
                                          ))
                 except Exception as err:
@@ -66,10 +68,12 @@ async def update_price(price: PriceIn, price_id: int):
                                  SET `product_id`='{0}',
                                      `item_measure`='{1}',
                                      `item_price`='{2}',
-                                     `author_id`='{3}' 
-                                 WHERE `id`='{4}'""".format(price.product_id,
+                                     `active`='{3}',
+                                     `author_id`='{4}' 
+                                 WHERE `id`='{5}'""".format(price.product_id,
                                                             price.item_measure,
                                                             price.item_price,
+                                                            price.active,
                                                             price.author_id,
                                                             price_id)
                         cursor.execute(sql)
@@ -165,6 +169,7 @@ async def get_price(price_id: int):
                                     'product_id': result.get('product_id'),
                                     'item_measure': result.get('item_measure'),
                                     'item_price': result.get('item_price'),
+                                    'active': result.get('active'),
                                     'author_id': result.get('author_id'),
                                     'created': result.get('created'),
                                     'updated': result.get('updated')

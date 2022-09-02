@@ -106,12 +106,8 @@ async def update_product(product: ProductIn, product_id: int):
                                             content={'detail': f'Product with ID: {product_id} not found.'}, )
                     cursor.execute(sql)
                 except Exception as err:
-                    err_message = ''
-                    for err_item in err.args:
-                        err_message += err_item
-                    logger.error(f'Error: {str(err)} {err_message}')
-                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                        detail=f'Error {str(err)} {err_message}')
+                    logger.error(f'Error: {str(err)}')
+                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
             connection.commit()
             return {'detail': f'Product ID: {product_id} updated'}
     except Exception as err:
