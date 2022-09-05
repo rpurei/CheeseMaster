@@ -15,8 +15,9 @@ router = APIRouter(
 
 
 @router.post('/', status_code=status.HTTP_201_CREATED)
-async def add_production(production: ProductionIn, current_user=Security(get_current_user,
-                                                                         scopes=['admin', 'cheesemaster:create'])):
+async def add_production(production: ProductionIn):
+    # , current_user = Security(get_current_user,
+    #                           scopes=['admin', 'cheesemaster:create'])
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -54,8 +55,9 @@ async def add_production(production: ProductionIn, current_user=Security(get_cur
 
 
 @router.patch('/{production_id}', status_code=status.HTTP_204_NO_CONTENT)
-async def update_production(production: ProductionIn, production_id: int, current_user=Security(get_current_user,
-                                                                             scopes=['admin', 'cheesemaster:update'])):
+async def update_production(production: ProductionIn, production_id: int):
+    # , current_user = Security(get_current_user,
+    #                           scopes=['admin', 'cheesemaster:update'])
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -102,7 +104,8 @@ async def update_production(production: ProductionIn, production_id: int, curren
 
 
 @router.delete('/{production_id}', status_code=status.HTTP_200_OK)
-async def delete_production(production_id: int, current_user=Security(get_current_user,scopes=['superadmin'])):
+async def delete_production(production_id: int):
+    # , current_user = Security(get_current_user, scopes=['superadmin'])
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -132,7 +135,8 @@ async def delete_production(production_id: int, current_user=Security(get_curren
 
 
 @router.get('/', status_code=status.HTTP_200_OK)
-async def get_productions(current_user=Security(get_current_user, scopes=['admin', 'cheesemaster:read'])):
+async def get_productions():
+    # current_user = Security(get_current_user, scopes=['admin', 'cheesemaster:read'])
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -155,8 +159,9 @@ async def get_productions(current_user=Security(get_current_user, scopes=['admin
 
 
 @router.get('/{production_id}', status_code=status.HTTP_200_OK, response_model=ProductionOut)
-async def get_production(production_id: int, current_user=Security(get_current_user, scopes=['admin',
-                                                                                             'cheesemaster:read'])):
+async def get_production(production_id: int):
+    # , current_user = Security(get_current_user, scopes=['admin',
+    #                                                     'cheesemaster:read'])
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
