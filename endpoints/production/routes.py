@@ -40,6 +40,7 @@ async def add_production(production: ProductionIn):
                                          production.manufacturer_id,
                                          production.warehouse_id,
                                          production.amount,
+                                         production.item_measure,
                                          production.date,
                                          production.comment,
                                          production.author_id

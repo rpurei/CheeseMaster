@@ -35,7 +35,9 @@ async def add_warehouse(warehouse: WarehouseIn):
                              VALUES (%s,%s,%s,%s,%s,%s)"""
                     cursor.execute(sql, (warehouse.product_id,
                                          warehouse.amount,
+                                         warehouse.item_measure,
                                          warehouse.reserve,
+                                         warehouse.active,
                                          warehouse.author_id
                                          ))
                 except Exception as err:
