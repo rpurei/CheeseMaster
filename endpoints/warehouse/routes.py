@@ -15,7 +15,8 @@ router = APIRouter(
 
 
 @router.post('/', status_code=status.HTTP_201_CREATED)
-async def add_warehouse(warehouse: WarehouseIn, current_user=Security(get_current_user, scopes=['admin'])):
+async def add_warehouse(warehouse: WarehouseIn):
+    # , current_user = Security(get_current_user, scopes=['admin'])
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -55,8 +56,9 @@ async def add_warehouse(warehouse: WarehouseIn, current_user=Security(get_curren
 
 
 @router.patch('/{warehouse_id}', status_code=status.HTTP_204_NO_CONTENT)
-async def update_warehouse(warehouse: WarehouseIn, warehouse_id: int, current_user=Security(get_current_user,
-                                                                                            scopes=['admin'])):
+async def update_warehouse(warehouse: WarehouseIn, warehouse_id: int):
+    # , current_user = Security(get_current_user,
+    #                           scopes=['admin'])
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -103,7 +105,8 @@ async def update_warehouse(warehouse: WarehouseIn, warehouse_id: int, current_us
 
 
 @router.delete("/{warehouse_id}", status_code=status.HTTP_200_OK)
-async def delete_warehouse(warehouse_id: int, current_user=Security(get_current_user,scopes=['superadmin'])):
+async def delete_warehouse(warehouse_id: int):
+    # , current_user = Security(get_current_user, scopes=['superadmin'])
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -133,7 +136,8 @@ async def delete_warehouse(warehouse_id: int, current_user=Security(get_current_
 
 
 @router.get('/', status_code=status.HTTP_200_OK)
-async def get_warehouses(current_user=Security(get_current_user, scopes=['admin', 'cheesemaster:read'])):
+async def get_warehouses():
+    # current_user = Security(get_current_user, scopes=['admin', 'cheesemaster:read'])
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -159,8 +163,9 @@ async def get_warehouses(current_user=Security(get_current_user, scopes=['admin'
 
 
 @router.get('/{warehouse_id}', status_code=status.HTTP_200_OK, response_model=WarehouseOut)
-async def get_warehouse(warehouse_id: int, current_user=Security(get_current_user, scopes=['admin',
-                                                                                           'cheesemaster:read'])):
+async def get_warehouse(warehouse_id: int):
+    # , current_user = Security(get_current_user, scopes=['admin',
+    #                                                     'cheesemaster:read'])
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
