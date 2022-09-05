@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 class WarehouseIn(BaseModel):
     product_id: int
+    storage_id: int
     amount: float
     item_measure: str
     reserve: float
@@ -14,6 +15,7 @@ class WarehouseIn(BaseModel):
 class WarehouseOut(BaseModel):
     id: int
     product_id: int
+    storage_id: int
     amount: float
     item_measure: str
     reserve: float

@@ -23,18 +23,19 @@
 # 	PRIMARY KEY (`id`)
 # );
 #
-# CREATE TABLE `warehouses` (
-# 	`id` INT NOT NULL AUTO_INCREMENT,
-# 	`product_id` INT NOT NULL,
-# 	`amount` FLOAT DEFAULT 0,
-# 	`item_measure` TEXT NOT NULL,
-# 	`reserve` FLOAT DEFAULT 0,
-# 	`active` BOOL DEFAULT FALSE,
-# 	`created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-# 	`updated` DATETIME ON UPDATE CURRENT_TIMESTAMP,
-# 	`author_id` INT NOT NULL DEFAULT 1,
-# 	PRIMARY KEY (`id`)
-# );
+CREATE TABLE `warehouses` (
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`storage_id` INT NOT NULL,
+	`product_id` INT NOT NULL,
+	`amount` FLOAT DEFAULT 0,
+	`item_measure` TEXT NOT NULL,
+	`reserve` FLOAT DEFAULT 0,
+	`active` BOOL DEFAULT FALSE,
+	`created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	`updated` DATETIME ON UPDATE CURRENT_TIMESTAMP,
+	`author_id` INT NOT NULL DEFAULT 1,
+	PRIMARY KEY (`id`)
+);
 #
 # CREATE TABLE `prices` (
 # 	`id` INT NOT NULL AUTO_INCREMENT,
@@ -58,20 +59,21 @@
 # 	PRIMARY KEY (`id`)
 # );
 #
-# CREATE TABLE `productions` (
-# 	`id` INT NOT NULL AUTO_INCREMENT,
-# 	`product_id` INT NOT NULL,
-# 	`manufacturer_id` INT NOT NULL,
-# 	`warehouse_id` INT NOT NULL,
-# 	`amount` FLOAT DEFAULT 0,
-# 	`item_measure` TEXT NOT NULL,
-# 	`date` DATETIME NOT NULL,
-# 	`comment` TEXT,
-# 	`created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-# 	`updated` DATETIME ON UPDATE CURRENT_TIMESTAMP,
-# 	`author_id` INT NOT NULL,
-# 	PRIMARY KEY (`id`)
-# );
+CREATE TABLE `productions` (
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`product_id` INT NOT NULL,
+	`manufacturer_id` INT NOT NULL,
+    `storage_id` INT NOT NULL,
+	`amount` FLOAT DEFAULT 0,
+	`item_measure` TEXT NOT NULL,
+	`date` DATETIME NOT NULL,
+    `operation` VARCHAR(16) NOT NULL,
+	`comment` TEXT,
+	`created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	`updated` DATETIME ON UPDATE CURRENT_TIMESTAMP,
+	`author_id` INT NOT NULL,
+	PRIMARY KEY (`id`)
+);
 #
 #
 # CREATE TABLE `pickpoints` (
@@ -149,6 +151,17 @@
 # );
 ######
 # INSERT INTO user_roles(`title`) VALUES (N'Администратор'),(N'Сыровар'),(N'Покупатель')
+
+CREATE TABLE `storages` (
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`name` TEXT,
+	`address` TEXT NOT NULL,
+	`active` BOOLEAN NOT NULL DEFAULT FALSE,
+	`created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	`updated` DATETIME ON UPDATE CURRENT_TIMESTAMP,
+	`author_id` INT NOT NULL,
+	PRIMARY KEY (`id`)
+);
 
 CREATE TABLE `cart` (
 	`ID` INT NOT NULL AUTO_INCREMENT,
