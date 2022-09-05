@@ -43,8 +43,8 @@ async def add_production(production: ProductionIn):
                                          production.amount,
                                          production.item_measure,
                                          production.date,
-                                         production.comment,
                                          production.operation,
+                                         production.comment,
                                          production.author_id
                                          ))
                 except Exception as err:
