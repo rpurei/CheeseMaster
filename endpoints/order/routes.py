@@ -45,7 +45,7 @@ async def add_order(order: OrderIn):
                     logger.error(f'Error: {str(err)}')
                     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
             connection.commit()
-            return {'detail': f'{connection.insert_id()} order added'}
+            return {'detail': f'{cursor.lastrowid} order added'}
     except Exception as err:
         logger.error(f'Error: {str(err)}')
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
