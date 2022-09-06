@@ -8,7 +8,7 @@ class ContentIn(BaseModel):
     order_id: int
     product_id: int
     manufacturer_id: int
-    warehouse_id: int
+    storage_id: int = 0
     amount: float
     price_id: int
     status: Union[str, None] = None
@@ -22,7 +22,7 @@ class ContentOut(BaseModel):
     order_id: int
     product_id: int
     manufacturer_id: int
-    warehouse_id: int
+    storage_id: int = 0
     amount: float
     price_id: int
     status: Union[str, None] = None

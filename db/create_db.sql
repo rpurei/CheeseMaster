@@ -113,7 +113,7 @@ CREATE TABLE `productions` (
 # 	`order_id` INT NOT NULL,
 # 	`product_id` INT NOT NULL,
 # 	`manufacturer_id` INT NOT NULL,
-# 	`warehouse_id` INT NOT NULL,
+# 	`storage_id` INT NOT NULL,
 # 	`amount` FLOAT DEFAULT 0,
 # 	`price_id` INT NOT NULL,
 # 	`status` TEXT NOT NULL,
