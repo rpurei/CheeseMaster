@@ -32,13 +32,15 @@ async def add_order(order: OrderIn):
                                                    `status`,
                                                    `delivery_date`,
                                                    `payment_type`,
+                                                   `pickpoint_id`,
                                                    `author_id`) 
-                             VALUES (%s,%s,%s,%s,%s,%s)"""
+                             VALUES (%s,%s,%s,%s,%s,%s,%s)"""
                     cursor.execute(sql, (order.comment,
                                          order.date,
                                          order.status,
                                          order.delivery_date,
                                          order.payment_type,
+                                         order.pickpoint_id,
                                          order.author_id
                                          ))
                 except Exception as err:
@@ -77,12 +79,14 @@ async def update_order(order: OrderIn, order_id: int):
                                  `status`='{2}',
                                  `delivery_date`='{3}',
                                  `payment_type`='{4}',
-                                 `author_id`='{5}' 
-                                 WHERE `id`='{6}'""".format(order.comment,
+                                 `pickpoint_id`='{5}',
+                                 `author_id`='{6}' 
+                                 WHERE `id`='{7}'""".format(order.comment,
                                                             order.date,
                                                             order.status,
                                                             order.delivery_date,
                                                             order.payment_type,
+                                                            order.pickpoint_id,
                                                             order.author_id,
                                                             order_id)
                         cursor.execute(sql)
@@ -181,6 +185,7 @@ async def get_order(order_id: int):
                             'delivery_date': result.get('delivery_date'),
                             'payment_type': result.get('payment_type'),
                             'status': result.get('status'),
+                            'pickpoint_id': result.get('pickpoint_id'),
                             'comment': result.get('comment'),
                             'author_id': result.get('author_id'),
                             'created': result.get('created'),

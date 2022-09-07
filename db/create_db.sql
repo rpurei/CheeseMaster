@@ -100,6 +100,7 @@ CREATE TABLE `productions` (
 # 	`status` TEXT NOT NULL,
 # 	`delivery_date` DATETIME NOT NULL,
 # 	`payment_type` VARCHAR(128),
+# 	`pickpoint_id` INT NOT NULL,
 # 	`created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 # 	`updated` DATETIME ON UPDATE CURRENT_TIMESTAMP,
 # 	`author_id` INT NOT NULL,

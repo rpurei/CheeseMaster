@@ -8,6 +8,7 @@ class OrderIn(BaseModel):
     delivery_date: datetime.date
     payment_type: int
     status: Union[str, None] = None
+    pickpoint_id: int
     comment: Union[str, None] = None
     author_id: int
 
@@ -18,6 +19,7 @@ class OrderOut(BaseModel):
     delivery_date: datetime.date
     payment_type: int
     status: Union[str, None] = None
+    pickpoint_id: int
     comment: Union[str, None] = None
     author_id: int
     created: datetime.datetime
