@@ -46,7 +46,7 @@ async def login(user: User):
                         sql = """SELECT * FROM `users` WHERE `login`='{0}'""".format(user_data['login'])
                         cursor.execute(sql)
                         result = cursor.fetchone()
-                        if len(result) == 0:
+                        if result is None:
                             sql = """INSERT INTO `users` 
                                                  (`fio`,
                                                   `login`,
