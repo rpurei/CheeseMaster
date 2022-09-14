@@ -78,7 +78,7 @@ async def update_content(content: ContentIn, content_id: int):
                     sql = 'SELECT `ID` FROM `order_contents` WHERE `ID`={0}'.format(content_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
-                    if len(result) > 0:
+                    if result:
                         sql = """UPDATE `order_contents` 
                                  SET `comment`='{0}',
                                      `date`='{1}',
@@ -136,7 +136,7 @@ async def delete_content(content_id: int):
                     sql = """SELECT `ID` FROM `order_contents` WHERE `id`='{0}'""".format(content_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
-                    if len(result) > 0:
+                    if result:
                         sql = """DELETE FROM `order_contents` WHERE `id`='{0}'""".format(content_id)
                         cursor.execute(sql)
                     else:
@@ -205,7 +205,7 @@ async def get_content(content_id: int):
                     cursor.execute(sql)
                     result = cursor.fetchone()
                     result = dict(result)
-                    if len(result) > 0:
+                    if result:
                         return {'id': result.get('id'),
                                 'date': result.get('date'),
                                 'order_id': result.get('order_id'),

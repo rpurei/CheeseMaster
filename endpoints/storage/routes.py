@@ -63,7 +63,7 @@ async def update_storage(storage: StorageIn, storage_id: int):
                     sql = "SELECT `id` FROM `storages` WHERE `id`={0}".format(storage_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
-                    if len(result) > 0:
+                    if result:
                         sql = """UPDATE `storages` 
                                  SET `name`='{0}',
                                      `address`='{1}',
@@ -103,7 +103,7 @@ async def delete_storage(storage_id: int):
                     sql = """SELECT `id` FROM `storages` WHERE `id`='{0}'""".format(storage_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
-                    if len(result) > 0:
+                    if result:
                         sql = """DELETE FROM `storages` WHERE `id`='{0}'""".format(storage_id)
                         cursor.execute(sql)
                     else:
@@ -163,7 +163,7 @@ async def get_storage(storage_id: int):
                     cursor.execute(sql)
                     result = cursor.fetchone()
                     result = dict(result)
-                    if len(result) > 0:
+                    if result:
                         return {'id': result.get('id'),
                                 'name': result.get('name'),
                                 'address': result.get('address'),

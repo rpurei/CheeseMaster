@@ -73,7 +73,7 @@ async def update_production(production: ProductionIn, production_id: int):
                     sql = 'SELECT `ID` FROM `productions` WHERE `ID`={0}'.format(production_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
-                    if len(result) > 0:
+                    if result:
                         sql = """UPDATE `productions` 
                                  SET `product_id`='{0}',
                                      `manufacturer_id`='{1}',
@@ -121,7 +121,7 @@ async def delete_production(production_id: int):
                     sql = """SELECT `id` FROM `productions` WHERE `id`='{0}'""".format(production_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
-                    if len(result) > 0:
+                    if result:
                         sql = """DELETE FROM `productions` WHERE `id`='{0}'""".format(production_id)
                         cursor.execute(sql)
                     else:
@@ -178,7 +178,7 @@ async def get_production(production_id: int):
                     cursor.execute(sql)
                     result = cursor.fetchone()
                     result = dict(result)
-                    if len(result) > 0:
+                    if result:
                         return {'id': result.get('id'),
                                 'date': result.get('date'),
                                 'product_id': result.get('product_id'),

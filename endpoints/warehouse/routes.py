@@ -73,7 +73,7 @@ router = APIRouter(
 #                     sql = 'SELECT `ID` FROM `warehouses` WHERE `ID`={0}'.format(warehouse_id)
 #                     cursor.execute(sql)
 #                     result = cursor.fetchall()
-#                     if len(result) > 0:
+#                     if result:
 #                         sql = """UPDATE `warehouses`
 #                                  SET `product_id`='{0}',
 #                                      `amount`='{1}',
@@ -121,7 +121,7 @@ router = APIRouter(
 #                     sql = """SELECT `id` FROM `warehouses` WHERE `id`='{0}'""".format(warehouse_id)
 #                     cursor.execute(sql)
 #                     result = cursor.fetchall()
-#                     if len(result) > 0:
+#                     if result:
 #                         sql = """DELETE FROM `warehouses` WHERE `id`='{0}'""".format(warehouse_id)
 #                         cursor.execute(sql)
 #                     else:
@@ -181,7 +181,7 @@ async def get_warehouse(warehouse_id: int):
                     cursor.execute(sql)
                     result = cursor.fetchone()
                     result = dict(result)
-                    if len(result) > 0:
+                    if result:
                         return {
                                     'id': result.get('id'),
                                     'product_id': result.get('product_id'),

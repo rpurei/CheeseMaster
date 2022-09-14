@@ -127,7 +127,7 @@ async def delete_product(product_id: int, current_user = Security(get_current_us
                     sql = """SELECT `id` FROM `products` WHERE `id`='{0}'""".format(product_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
-                    if len(result) > 0:
+                    if result:
                         sql = """DELETE FROM `products` WHERE `id`='{0}'""".format(product_id)
                         cursor.execute(sql)
                     else:
@@ -184,7 +184,7 @@ async def get_product(product_id: int, current_user=Security(get_current_user, s
                     cursor.execute(sql)
                     result = cursor.fetchone()
                     result = dict(result)
-                    if len(result) > 0:
+                    if result:
                         return {
                                     'id': result.get('id'),
                                     'name': result.get('name'),

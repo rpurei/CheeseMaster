@@ -62,7 +62,7 @@ async def update_category(category: CategoryIn, category_id: int):
                     sql = 'SELECT `ID` FROM `categories` WHERE `ID`={0}'.format(category_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
-                    if len(result) > 0:
+                    if result:
                         sql = """UPDATE `categories` 
                                  SET `name`='{0}',
                                      `active`='{1}',
@@ -102,7 +102,7 @@ async def delete_category(category_id: int):
                     sql = """SELECT `ID` FROM `categories` WHERE `id`='{0}'""".format(category_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
-                    if len(result) > 0:
+                    if result:
                         sql = """DELETE FROM `categories` WHERE `id`='{0}'""".format(category_id)
                         cursor.execute(sql)
                     else:
@@ -162,7 +162,7 @@ async def get_category(category_id: int):
                     cursor.execute(sql)
                     result = cursor.fetchone()
                     result = dict(result)
-                    if len(result) > 0:
+                    if result:
                         return {'id': result.get('id'),
                                 'name': result.get('name'),
                                 'active': result.get('active'),

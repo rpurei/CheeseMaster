@@ -61,7 +61,7 @@ async def update_manufacturer(manufacturer: ManufacturerIn, manufacturer_id: int
                     sql = 'SELECT `ID` FROM `manufacturers` WHERE `ID`={0}'.format(manufacturer_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
-                    if len(result) > 0:
+                    if result:
                         sql = """UPDATE `manufacturers` 
                                  SET `name`='{0}',
                                      `address`='{1}',
@@ -103,7 +103,7 @@ async def delete_manufacturer(manufacturer_id: int):
                     sql = """SELECT `ID` FROM `manufacturers` WHERE `id`='{0}'""".format(manufacturer_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
-                    if len(result) > 0:
+                    if result:
                         sql = """DELETE FROM `manufacturers` WHERE `id`='{0}'""".format(manufacturer_id)
                         cursor.execute(sql)
                     else:
@@ -164,7 +164,7 @@ async def get_manufacturer(manufacturer_id: int):
                     cursor.execute(sql)
                     result = cursor.fetchone()
                     result = dict(result)
-                    if len(result) > 0:
+                    if result:
                         return {
                                     'id': result.get('id'),
                                     'name': result.get('name'),

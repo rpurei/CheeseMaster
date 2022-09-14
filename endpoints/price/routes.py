@@ -63,7 +63,7 @@ async def update_price(price: PriceIn, price_id: int):
                     sql = 'SELECT `ID` FROM `prices` WHERE `ID`={0}'.format(price_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
-                    if len(result) > 0:
+                    if result:
                         sql = """UPDATE `prices` 
                                  SET `product_id`='{0}',
                                      `item_measure`='{1}',
@@ -105,7 +105,7 @@ async def delete_price(price_id: int):
                     sql = """SELECT `id` FROM `prices` WHERE `id`={0}""".format(price_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
-                    if len(result) > 0:
+                    if result:
                         sql = """DELETE FROM `prices` WHERE `id`={0}""".format(price_id)
                         cursor.execute(sql)
                     else:
@@ -163,7 +163,7 @@ async def get_price(price_id: int):
                     cursor.execute(sql)
                     result = cursor.fetchone()
                     result = dict(result)
-                    if len(result) > 0:
+                    if result:
                         return {
                                     'id': result.get('id'),
                                     'product_id': result.get('product_id'),

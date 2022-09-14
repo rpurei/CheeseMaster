@@ -73,7 +73,7 @@ async def update_pickpoint(pickpoint: PickpointIn, pickpoint_id: int, current_us
                     sql = "SELECT `id` FROM `pickpoints` WHERE `id`={0}".format(pickpoint_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
-                    if len(result) > 0:
+                    if result:
                         sql = """UPDATE `pickpoints` 
                                  SET `name`='{0}',
                                      `address`='{1}',
@@ -124,7 +124,7 @@ async def delete_pickpoint(pickpoint_id: int, current_user = Security(get_curren
                     sql = """SELECT `id` FROM `pickpoints` WHERE `id`='{0}'""".format(pickpoint_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
-                    if len(result) > 0:
+                    if result:
                         sql = """DELETE FROM `pickpoints` WHERE `id`='{0}'""".format(pickpoint_id)
                         cursor.execute(sql)
                     else:
@@ -182,7 +182,7 @@ async def get_pickpoint(pickpoint_id: int, current_user = Security(get_current_u
                     cursor.execute(sql)
                     result = cursor.fetchone()
                     result = dict(result)
-                    if len(result) > 0:
+                    if result:
                         return {'id': result.get('id'),
                                 'name': result.get('name'),
                                 'address': result.get('address'),

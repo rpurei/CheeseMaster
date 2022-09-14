@@ -71,7 +71,7 @@ async def update_order(order: OrderIn, order_id: int):
                     sql = "SELECT `id` FROM `orders` WHERE `id`={0}".format(order_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
-                    if len(result) > 0:
+                    if result:
                         sql = """UPDATE `orders` 
                                  SET 
                                  `comment`='{0}',
@@ -118,7 +118,7 @@ async def delete_order(order_id: int):
                     sql = """SELECT `ID` FROM `orders` WHERE `id`='{0}'""".format(order_id)
                     cursor.execute(sql)
                     result = cursor.fetchall()
-                    if len(result) > 0:
+                    if result:
                         sql = """DELETE FROM `orders` WHERE `id`='{0}'""".format(order_id)
                         cursor.execute(sql)
                     else:
@@ -178,7 +178,7 @@ async def get_order(order_id: int):
                     cursor.execute(sql)
                     result = cursor.fetchone()
                     result = dict(result)
-                    if len(result) > 0:
+                    if result:
                         return {
                             'id': result.get('id'),
                             'date': result.get('order_date'),

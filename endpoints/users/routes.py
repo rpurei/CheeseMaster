@@ -113,7 +113,7 @@ async def info(current_user=Security(get_current_user, scopes=['admin', 'user:re
                 cursor.execute(sql)
                 result = cursor.fetchone()
                 result = dict(result)
-                if len(result) > 0:
+                if result:
                     return {
                         'id': result.get('id'),
                         'login': result.get('login'),
