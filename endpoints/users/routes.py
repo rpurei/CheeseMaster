@@ -46,7 +46,6 @@ async def login(user: User):
                         sql = """SELECT * FROM `users` WHERE `login`='{0}'""".format(user_data['login'])
                         cursor.execute(sql)
                         result = cursor.fetchone()
-                        result = dict(result)
                         if len(result) == 0:
                             sql = """INSERT INTO `users` 
                                                  (`fio`,
@@ -67,6 +66,7 @@ async def login(user: User):
                                       'user:update',
                                       'user:delete']
                         else:
+                            result = dict(result)
                             user_role = result.get('role')
                             if user_role == 1:
                                 scopes = ['admin']
