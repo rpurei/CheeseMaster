@@ -50,7 +50,7 @@ async def login(user: User):
                             sql = """INSERT INTO `users` 
                                                  (`fio`,
                                                   `login`,
-                                                  role_id,
+                                                  `role_id`,
                                                   `email`,
                                                   `auth_source`,
                                                   `active`) 
