@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse
 import pymysql.cursors
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
+import traceback
 
 
 router = APIRouter(
@@ -92,8 +93,10 @@ async def login(user: User):
                     headers={'WWW-Authenticate': 'Bearer'},
                 )
         except Exception as err:
-            logger.error(f'Error: {str(err)}')
-            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
+            lf = '\n'
+            logger.error(f'{traceback.format_exc().replace(lf, "")} : {str(err)}')
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                detail=f'{traceback.format_exc()} : {str(err)}')
 
 
 @router.get('/info', response_model=UserInfo)
@@ -124,8 +127,10 @@ async def info(current_user=Security(get_current_user, scopes=['admin', 'user:re
                     return JSONResponse(status_code=404,
                                         content={'detail': f'User with login: {current_user} not found.'}, )
     except Exception as err:
-        logger.error(f'Error: {str(err)}')
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
+        lf = '\n'
+        logger.error(f'{traceback.format_exc().replace(lf, "")} : {str(err)}')
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail=f'{traceback.format_exc()} : {str(err)}')
 
 
 @router.get('/orders')
@@ -148,8 +153,10 @@ async def info(current_user=Security(get_current_user, scopes=['admin', 'user:re
                 result = cursor.fetchall()
                 return result
     except Exception as err:
-        logger.error(f'Error: {str(err)}')
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
+        lf = '\n'
+        logger.error(f'{traceback.format_exc().replace(lf, "")} : {str(err)}')
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail=f'{traceback.format_exc()} : {str(err)}')
 
 
 @router.get('/check')
