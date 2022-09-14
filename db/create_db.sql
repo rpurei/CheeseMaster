@@ -23,19 +23,19 @@
 # 	PRIMARY KEY (`id`)
 # );
 #
-CREATE TABLE `warehouses` (
-	`id` INT NOT NULL AUTO_INCREMENT,
-	`storage_id` INT NOT NULL,
-	`product_id` INT NOT NULL,
-	`amount` FLOAT DEFAULT 0,
-	`item_measure` TEXT NOT NULL,
-	`reserve` FLOAT DEFAULT 0,
-	`active` BOOL DEFAULT FALSE,
-	`created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	`updated` DATETIME ON UPDATE CURRENT_TIMESTAMP,
-	`author_id` INT NOT NULL DEFAULT 1,
-	PRIMARY KEY (`id`)
-);
+# CREATE TABLE `warehouses` (
+# 	`id` INT NOT NULL AUTO_INCREMENT,
+# 	`storage_id` INT NOT NULL,
+# 	`product_id` INT NOT NULL,
+# 	`amount` FLOAT DEFAULT 0,
+# 	`item_measure` TEXT NOT NULL,
+# 	`reserve` FLOAT DEFAULT 0,
+# 	`active` BOOL DEFAULT FALSE,
+# 	`created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+# 	`updated` DATETIME ON UPDATE CURRENT_TIMESTAMP,
+# 	`author_id` INT NOT NULL DEFAULT 1,
+# 	PRIMARY KEY (`id`)
+# );
 #
 # CREATE TABLE `prices` (
 # 	`id` INT NOT NULL AUTO_INCREMENT,
@@ -59,21 +59,21 @@ CREATE TABLE `warehouses` (
 # 	PRIMARY KEY (`id`)
 # );
 #
-CREATE TABLE `productions` (
-	`id` INT NOT NULL AUTO_INCREMENT,
-	`product_id` INT NOT NULL,
-	`manufacturer_id` INT NOT NULL,
-    `storage_id` INT NOT NULL,
-	`amount` FLOAT DEFAULT 0,
-	`item_measure` TEXT NOT NULL,
-	`date` DATETIME NOT NULL,
-    `operation` VARCHAR(16) NOT NULL,
-	`comment` TEXT,
-	`created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	`updated` DATETIME ON UPDATE CURRENT_TIMESTAMP,
-	`author_id` INT NOT NULL,
-	PRIMARY KEY (`id`)
-);
+# CREATE TABLE `productions` (
+# 	`id` INT NOT NULL AUTO_INCREMENT,
+# 	`product_id` INT NOT NULL,
+# 	`manufacturer_id` INT NOT NULL,
+#     `storage_id` INT NOT NULL,
+# 	`amount` FLOAT DEFAULT 0,
+# 	`item_measure` TEXT NOT NULL,
+# 	`date` DATETIME NOT NULL,
+#     `operation` VARCHAR(16) NOT NULL,
+# 	`comment` TEXT,
+# 	`created` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+# 	`updated` DATETIME ON UPDATE CURRENT_TIMESTAMP,
+# 	`author_id` INT NOT NULL,
+# 	PRIMARY KEY (`id`)
+# );
 #
 #
 # CREATE TABLE `pickpoints` (
@@ -95,6 +95,7 @@ CREATE TABLE `productions` (
 #
 # CREATE TABLE `orders` (
 # 	`id` INT NOT NULL AUTO_INCREMENT,
+# 	`user_id` INT NOT NULL,
 # 	`comment` TEXT NOT NULL,
 # 	`order_date` DATETIME NOT NULL,
 # 	`status` TEXT NOT NULL,
@@ -130,7 +131,7 @@ CREATE TABLE `productions` (
 # 	`guid` VARCHAR(255),
 # 	`login` VARCHAR(255) NOT NULL,
 # 	`password` VARCHAR(255),
-# 	`role` INT NOT NULL,
+# 	`role_id` INT NOT NULL,
 # 	`fio` VARCHAR(255) NOT NULL,
 # 	`email` VARCHAR(255) NOT NULL,
 # 	`phone` VARCHAR(20),

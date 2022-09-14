@@ -8,6 +8,16 @@ class User(BaseModel):
     password: str
 
 
+class UserInfo(BaseModel):
+    id: int
+    login: str
+    role: int
+    fio: str
+    email: str
+    phone: str
+    active: int
+
+
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -16,3 +26,4 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     name: Union[str, None] = None
     scopes: List[str] = []
+
