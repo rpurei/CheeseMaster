@@ -4,7 +4,7 @@ from config import (LDAP_BASE_DN, LDAP_SERVER_NAME, LDAP_BIND_USER_NAME, LDAP_BI
 from .models import TokenData
 import ldap
 from datetime import datetime, timedelta
-from jose import JWTError, jwt
+from jose import JWTError, jwt, ExpiredSignatureError
 from fastapi import status, HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 import pymysql.cursors
@@ -100,11 +100,10 @@ def create_access_token(data: dict, expires_delta: timedelta):
 
 
 def check_access_token(token: str = Depends(oauth2_scheme)):
-    payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
-    ct = datetime.now()
-    if ct.timestamp() < payload.get('exp', 0):
+    try:
+        payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
         return 'TOKEN_VALID'
-    else:
+    except ExpiredSignatureError:
         return 'TOKEN_EXPIRED'
 
 
@@ -162,7 +161,7 @@ async def get_current_user(security_scopes: SecurityScopes, token: str = Depends
     if user == '':
         logger.error(credentials_exception)
         raise credentials_exception
-    logger.info(f'Token scopes: {token_scopes}')
+    print(token_scopes)
     for scope in security_scopes.scopes:
         if scope not in token_data.scopes:
             raise HTTPException(

@@ -11,7 +11,7 @@ class User(BaseModel):
 class UserInfo(BaseModel):
     id: int
     login: str
-    role: int
+    role_id: int
     fio: str
     email: str
     phone: str

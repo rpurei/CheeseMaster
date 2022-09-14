@@ -71,15 +71,10 @@ async def login(user: User):
                             if user_role == 1:
                                 scopes = ['admin']
                             elif user_role == 2:
-                                scopes = ['cheesemaster:create',
-                                          'cheesemaster:read',
-                                          'cheesemaster:update',
-                                          'cheesemaster:delete']
+                                scopes = ['user:read']
                             elif user_role == 3:
-                                scopes = ['user:create',
-                                          'user:read',
-                                          'user:update',
-                                          'user:delete']
+                                scopes = ['user:read',
+                                          'user:update']
                             else:
                                 raise ValueError('Unknown role')
                     connection.commit()
@@ -101,7 +96,7 @@ async def login(user: User):
 
 
 @router.get('/info', response_model=UserInfo)
-async def info(current_user=Security(get_current_user, scopes=['admin', 'user:read', 'cheesemaster:read'])):
+async def info(current_user=Security(get_current_user, scopes=['user:read'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
