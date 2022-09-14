@@ -15,8 +15,7 @@ router = APIRouter(
 
 
 @router.post('/', status_code=status.HTTP_201_CREATED)
-async def add_price(price: PriceIn):
-    # , current_user = Security(get_current_user, scopes=['admin'])
+async def add_price(price: PriceIn, current_user=Security(get_current_user, scopes=['admin'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -49,8 +48,7 @@ async def add_price(price: PriceIn):
 
 
 @router.patch('/{price_id}', status_code=status.HTTP_204_NO_CONTENT)
-async def update_price(price: PriceIn, price_id: int):
-    # , current_user = Security(get_current_user, scopes=['admin'])
+async def update_price(price: PriceIn, price_id: int, current_user=Security(get_current_user, scopes=['admin'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -91,8 +89,7 @@ async def update_price(price: PriceIn, price_id: int):
 
 
 @router.delete('/{price_id}', status_code=status.HTTP_200_OK)
-async def delete_price(price_id: int):
-    # , current_user = Security(get_current_user, scopes=['superadmin'])
+async def delete_price(price_id: int, current_user=Security(get_current_user, scopes=['superadmin'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -122,8 +119,7 @@ async def delete_price(price_id: int):
 
 
 @router.get('/', status_code=status.HTTP_200_OK)
-async def get_prices():
-    # current_user = Security(get_current_user, scopes=['admin', 'user:read', 'cheesemaster:read'])
+async def get_prices(current_user=Security(get_current_user, scopes=['price:read'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -146,10 +142,7 @@ async def get_prices():
 
 
 @router.get('/{price_id}', status_code=status.HTTP_200_OK, response_model=PriceOut)
-async def get_price(price_id: int):
-    # , current_user = Security(get_current_user, scopes=['admin',
-    #                                                     'user:read',
-    #                                                     'cheesemaster:read'])
+async def get_price(price_id: int, current_user=Security(get_current_user, scopes=['price:read'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,

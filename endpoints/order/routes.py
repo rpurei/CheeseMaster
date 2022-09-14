@@ -14,10 +14,7 @@ router = APIRouter(
 
 
 @router.post('/', status_code=status.HTTP_201_CREATED)
-async def add_order(order: OrderIn):
-    # , current_user = Security(get_current_user, scopes=['admin',
-    #                                                     'user:create',
-    #                                                     'cheesemaster:create'])
+async def add_order(order: OrderIn, current_user=Security(get_current_user, scopes=['order:create'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -27,14 +24,15 @@ async def add_order(order: OrderIn):
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = """INSERT INTO `orders` (`comment`,
+                    sql = """INSERT INTO `orders` (`user_id`,
+                                                   `comment`,
                                                    `order_date`,
                                                    `status`,
                                                    `delivery_date`,
                                                    `payment_type`,
                                                    `pickpoint_id`,
                                                    `author_id`) 
-                             VALUES (%s,%s,%s,%s,%s,%s,%s)"""
+                             VALUES (%s,%s,%s,%s,%s,%s,%s,%s)"""
                     cursor.execute(sql, (order.comment,
                                          order.date,
                                          order.status,
@@ -54,11 +52,7 @@ async def add_order(order: OrderIn):
 
 
 @router.patch('/{order_id}', status_code=status.HTTP_204_NO_CONTENT)
-async def update_order(order: OrderIn, order_id: int):
-    # , current_user = Security(get_current_user,
-    #                           scopes=['admin',
-    #                                   'user:update',
-    #                                   'cheesemaster:update'])
+async def update_order(order: OrderIn, order_id: int, current_user=Security(get_current_user, scopes=['order:update'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -104,8 +98,7 @@ async def update_order(order: OrderIn, order_id: int):
 
 
 @router.delete('/{order_id}', status_code=status.HTTP_200_OK)
-async def delete_order(order_id: int):
-    # , current_user = Security(get_current_user, scopes=['superadmin'])
+async def delete_order(order_id: int, current_user=Security(get_current_user, scopes=['superadmin'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -135,10 +128,7 @@ async def delete_order(order_id: int):
 
 
 @router.get('/', status_code=status.HTTP_200_OK)
-async def get_orders():
-    # current_user = Security(get_current_user, scopes=['admin',
-    #                                                   'user:read',
-    #                                                   'cheesemaster:read'])
+async def get_orders(current_user=Security(get_current_user, scopes=['order:read'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -161,10 +151,7 @@ async def get_orders():
 
 
 @router.get('/{order_id}', status_code=status.HTTP_200_OK, response_model=OrderOut)
-async def get_order(order_id: int):
-    # , current_user = Security(get_current_user, scopes=['admin',
-    #                                                     'user:read',
-    #                                                     'cheesemaster:read'])
+async def get_order(order_id: int, current_user=Security(get_current_user, scopes=['order:read'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -181,6 +168,7 @@ async def get_order(order_id: int):
                     if result:
                         return {
                             'id': result.get('id'),
+                            'user_id': result.get('user_id'),
                             'date': result.get('order_date'),
                             'delivery_date': result.get('delivery_date'),
                             'payment_type': result.get('payment_type'),

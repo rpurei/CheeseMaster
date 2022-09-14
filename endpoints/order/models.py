@@ -15,6 +15,7 @@ class OrderIn(BaseModel):
 
 class OrderOut(BaseModel):
     id: int
+    user_id: int
     date: datetime.date
     delivery_date: datetime.date
     payment_type: int

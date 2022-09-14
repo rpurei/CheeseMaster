@@ -14,10 +14,7 @@ router = APIRouter(
 
 
 @router.post('/', status_code=status.HTTP_201_CREATED)
-async def add_content(content: ContentIn):
-    # , current_user = Security(get_current_user, scopes=['admin',
-    #                                                     'user:create',
-    #                                                     'cheesemaster:create'])
+async def add_content(content: ContentIn, current_user=Security(get_current_user, scopes=['content:create'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -62,10 +59,8 @@ async def add_content(content: ContentIn):
 
 
 @router.patch('/{content_id}', status_code=status.HTTP_204_NO_CONTENT)
-async def update_content(content: ContentIn, content_id: int):
-    # ,
-    # current_user = Security(get_current_user, scopes=['admin', 'user:update',
-    #                                                   'cheesemaster:update'])
+async def update_content(content: ContentIn, content_id: int,
+                         current_user=Security(get_current_user, scopes=['content:update'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -120,10 +115,7 @@ async def update_content(content: ContentIn, content_id: int):
 
 
 @router.delete('/{content_id}', status_code=status.HTTP_200_OK)
-async def delete_content(content_id: int):
-    # , current_user = Security(get_current_user, scopes=['admin',
-    #                                                     'user:delete',
-    #                                                     'cheesemaster:delete'])
+async def delete_content(content_id: int, current_user=Security(get_current_user, scopes=['content:delete'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -157,8 +149,7 @@ async def delete_content(content_id: int):
 
 
 @router.get('/', status_code=status.HTTP_200_OK)
-async def get_contents():
-    # current_user = Security(get_current_user, scopes=['admin', 'user:read', 'cheesemaster:read'])
+async def get_contents(current_user=Security(get_current_user, scopes=['content:read'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -188,10 +179,7 @@ async def get_contents():
 
 
 @router.get("/{content_id}", status_code=status.HTTP_200_OK, response_model=ContentOut)
-async def get_content(content_id: int):
-    # , current_user = Security(get_current_user, scopes=['admin',
-    #                                                     'user:read',
-    #                                                     'cheesemaster:read'])
+async def get_content(content_id: int, current_user=Security(get_current_user, scopes=['content:read'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,

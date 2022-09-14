@@ -15,8 +15,7 @@ router = APIRouter(
 
 
 @router.post('/', status_code=status.HTTP_201_CREATED)
-async def add_category(category: CategoryIn):
-    # , current_user = Security(get_current_user, scopes=['admin'])
+async def add_category(category: CategoryIn, current_user=Security(get_current_user, scopes=['category:create'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -47,9 +46,8 @@ async def add_category(category: CategoryIn):
 
 
 @router.patch('/{category_id}', status_code=status.HTTP_204_NO_CONTENT)
-async def update_category(category: CategoryIn, category_id: int):
-    # , current_user = Security(get_current_user,
-    #                           scopes=['admin'])
+async def update_category(category: CategoryIn, category_id: int,
+                          current_user=Security(get_current_user, scopes=['category:update'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -88,8 +86,7 @@ async def update_category(category: CategoryIn, category_id: int):
 
 
 @router.delete('/{category_id}', status_code=status.HTTP_200_OK)
-async def delete_category(category_id: int):
-    # , current_user = Security(get_current_user, scopes=['superadmin'])
+async def delete_category(category_id: int, current_user=Security(get_current_user, scopes=['superadmin'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -120,8 +117,7 @@ async def delete_category(category_id: int):
 
 
 @router.get("/", status_code=status.HTTP_200_OK)
-async def get_categories():
-    # current_user = Security(get_current_user, scopes=['admin', 'user:read', 'cheesemaster:read'])
+async def get_categories(current_user=Security(get_current_user, scopes=['category:read'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -145,10 +141,7 @@ async def get_categories():
 
 
 @router.get('/{category_id}', status_code=status.HTTP_200_OK, response_model=CategoryOut)
-async def get_category(category_id: int):
-    # , current_user = Security(get_current_user, scopes=['admin',
-    #                                                     'user:read',
-    #                                                     'cheesemaster:read'])
+async def get_category(category_id: int, current_user=Security(get_current_user, scopes=['category:read'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,

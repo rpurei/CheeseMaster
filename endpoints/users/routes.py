@@ -61,30 +61,76 @@ async def login(user: User):
                                                  user_data['mail'],
                                                  1,
                                                  1))
-                            scopes = ['user:create',
-                                      'user:read',
-                                      'user:update',
-                                      'user:delete']
+                            scopes = []
                         else:
                             result = dict(result)
                             user_role = result.get('role_id')
                             if user_role == 1:
                                 scopes = ['admin',
+                                          'user:read',
                                           'user:update',
                                           'user:delete',
                                           'product:read',
                                           'product:create',
-                                          'product:update']
+                                          'product:update',
+                                          'category:read',
+                                          'category:update',
+                                          'category:create',
+                                          'content:read',
+                                          'content:create',
+                                          'content:update',
+                                          'content:delete',
+                                          'manufacturer:read',
+                                          'order:create',
+                                          'order:update',
+                                          'order:read',
+                                          'pickpoint:read',
+                                          'price:read',
+                                          'production:read',
+                                          'production:update',
+                                          'production:create',
+                                          'storage:read',
+                                          'warehouse:read'
+                                          ]
                             elif user_role == 2:
                                 scopes = ['user:read',
                                           'product:read',
                                           'product:create',
-                                          'product:update'
+                                          'product:update',
+                                          'category:read',
+                                          'category:update'
+                                          'category:create',
+                                          'content:read',
+                                          'content:create',
+                                          'content:update',
+                                          'content:delete',
+                                          'manufacturer:read',
+                                          'order:create',
+                                          'order:update',
+                                          'order:read',
+                                          'pickpoint:read',
+                                          'price:read',
+                                          'production:read',
+                                          'production:update',
+                                          'production:create',
+                                          'storage:read',
+                                          'warehouse:read'
                                           ]
                             elif user_role == 3:
                                 scopes = ['user:read',
                                           'user:update',
-                                          'product:read']
+                                          'product:read',
+                                          'category:read',
+                                          'content:read',
+                                          'content:create',
+                                          'content:update',
+                                          'content:delete',
+                                          'manufacturer:read',
+                                          'order:create',
+                                          'order:update',
+                                          'pickpoint:read',
+                                          'price:read'
+                                          ]
                             else:
                                 raise ValueError('Unknown role')
                     connection.commit()
