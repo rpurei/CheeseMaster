@@ -67,7 +67,7 @@ async def login(user: User):
                                       'user:delete']
                         else:
                             result = dict(result)
-                            user_role = result.get('role')
+                            user_role = result.get('role_id')
                             if user_role == 1:
                                 scopes = ['admin']
                             elif user_role == 2:
@@ -80,7 +80,8 @@ async def login(user: User):
                                           'user:read',
                                           'user:update',
                                           'user:delete']
-
+                            else:
+                                raise ValueError('Unknown role')
                     connection.commit()
                 access_token_expires = timedelta(minutes=JWT_EXPIRE_MINUTES)
                 access_token = create_access_token(data={'sub': user.get('name'),
