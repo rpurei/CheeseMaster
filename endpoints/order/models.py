@@ -4,6 +4,7 @@ from typing import Union
 
 
 class OrderIn(BaseModel):
+    user_id: int
     date: datetime.date
     delivery_date: datetime.date
     payment_type: int

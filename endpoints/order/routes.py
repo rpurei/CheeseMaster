@@ -33,7 +33,8 @@ async def add_order(order: OrderIn, current_user=Security(get_current_user, scop
                                                    `pickpoint_id`,
                                                    `author_id`) 
                              VALUES (%s,%s,%s,%s,%s,%s,%s,%s)"""
-                    cursor.execute(sql, (order.comment,
+                    cursor.execute(sql, (order.user_id,
+                                         order.comment,
                                          order.date,
                                          order.status,
                                          order.delivery_date,
