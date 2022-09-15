@@ -15,6 +15,7 @@ router = APIRouter(
 
 @router.post('/', status_code=status.HTTP_201_CREATED)
 async def add_content(content: ContentIn, current_user=Security(get_current_user, scopes=['content:create'])):
+    print(current_user)
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -62,6 +63,7 @@ async def add_content(content: ContentIn, current_user=Security(get_current_user
 async def update_content(content: ContentIn, content_id: int,
                          current_user=Security(get_current_user, scopes=['content:update'])):
     logger.info(f'User: {current_user}')
+    print(current_user)
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
