@@ -61,6 +61,7 @@ async def add_content(content: ContentIn, current_user=Security(get_current_user
 @router.patch('/{content_id}', status_code=status.HTTP_204_NO_CONTENT)
 async def update_content(content: ContentIn, content_id: int,
                          current_user=Security(get_current_user, scopes=['content:update'])):
+    logger.info(f'User: {current_user}')
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
