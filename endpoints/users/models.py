@@ -14,7 +14,7 @@ class UserInfo(BaseModel):
     role_id: int
     fio: str
     email: str
-    phone: str
+    phone: Union[str, None] = None
     active: int
 
 
