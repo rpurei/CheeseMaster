@@ -91,7 +91,8 @@ async def login(user: User):
                                           'production:create',
                                           'storage:read',
                                           'warehouse:read',
-                                          'user:read'
+                                          'user:read',
+                                          'self:read'
                                           ]
                             elif user_role == 2:
                                 scopes = ['user:read',
