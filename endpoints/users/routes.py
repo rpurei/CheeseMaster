@@ -90,7 +90,8 @@ async def login(user: User):
                                           'production:update',
                                           'production:create',
                                           'storage:read',
-                                          'warehouse:read'
+                                          'warehouse:read',
+                                          'user:read'
                                           ]
                             elif user_role == 2:
                                 scopes = ['user:read',
@@ -114,7 +115,8 @@ async def login(user: User):
                                           'production:update',
                                           'production:create',
                                           'storage:read',
-                                          'warehouse:read'
+                                          'warehouse:read',
+                                          'user:read'
                                           ]
                             elif user_role == 3:
                                 scopes = ['user:read',
@@ -129,7 +131,8 @@ async def login(user: User):
                                           'order:create',
                                           'order:update',
                                           'pickpoint:read',
-                                          'price:read'
+                                          'price:read',
+                                          'self:read'
                                           ]
                             else:
                                 raise ValueError('Unknown role')
@@ -152,7 +155,7 @@ async def login(user: User):
 
 
 @router.get('/info', response_model=UserInfo)
-async def info(current_user=Security(get_current_user, scopes=['user:read'])):
+async def info(current_user=Security(get_current_user, scopes=['self:read'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -186,7 +189,7 @@ async def info(current_user=Security(get_current_user, scopes=['user:read'])):
 
 
 @router.get('/orders')
-async def info(current_user=Security(get_current_user, scopes=['admin', 'user:read', 'cheesemaster:read'])):
+async def info(current_user=Security(get_current_user, scopes=['self:read'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -211,6 +214,22 @@ async def info(current_user=Security(get_current_user, scopes=['admin', 'user:re
                             detail=f'{traceback.format_exc()} : {str(err)}')
 
 
-@router.get('/check')
-async def login(current_user: User = Depends(get_current_user)):
-    return current_user
+@router.get('/')
+async def login(current_user=Security(get_current_user, scopes=['user:read'])):
+    try:
+        connection = pymysql.connect(host=DB_HOST,
+                                     user=DB_USER,
+                                     password=DB_PASSWORD,
+                                     database=DB_NAME,
+                                     cursorclass=pymysql.cursors.DictCursor)
+        with connection:
+            with connection.cursor() as cursor:
+                sql = """SELECT * FROM `users`"""
+                cursor.execute(sql)
+                result = cursor.fetchall()
+                return result
+    except Exception as err:
+        lf = '\n'
+        logger.error(f'{traceback.format_exc().replace(lf, "")} : {str(err)}')
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail=f'{traceback.format_exc()} : {str(err)}')
