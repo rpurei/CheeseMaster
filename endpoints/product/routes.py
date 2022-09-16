@@ -145,7 +145,7 @@ async def delete_product(product_id: int, current_user=Security(get_current_user
 
 
 @router.get('/', status_code=status.HTTP_200_OK)
-async def get_products(current_user=Security(get_current_user, scopes=['product:read'])):
+async def get_products():    #current_user=Security(get_current_user, scopes=['product:read'])
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,

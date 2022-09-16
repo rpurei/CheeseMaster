@@ -119,7 +119,7 @@ async def delete_price(price_id: int, current_user=Security(get_current_user, sc
 
 
 @router.get('/', status_code=status.HTTP_200_OK)
-async def get_prices(current_user=Security(get_current_user, scopes=['price:read'])):
+async def get_prices():    #current_user=Security(get_current_user, scopes=['price:read'])
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,

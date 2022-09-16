@@ -141,7 +141,7 @@ async def delete_pickpoint(pickpoint_id: int, current_user=Security(get_current_
 
 
 @router.get('/', status_code=status.HTTP_200_OK)
-async def get_pickpoints(current_user=Security(get_current_user, scopes=['pickpoint:read'])):
+async def get_pickpoints():    #current_user=Security(get_current_user, scopes=['pickpoint:read'])
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
