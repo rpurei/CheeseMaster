@@ -161,6 +161,7 @@ async def get_current_user(security_scopes: SecurityScopes, token: str = Depends
     if user == '':
         logger.error(credentials_exception)
         raise credentials_exception
+    print(f'Scopes: {token_data.scopes}')
     for scope in security_scopes.scopes:
         if scope not in token_data.scopes:
             raise HTTPException(

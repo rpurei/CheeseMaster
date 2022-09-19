@@ -11,6 +11,31 @@ from jose import JWTError, jwt
 import traceback
 
 
+user_scopes = ['user:read',
+              'product:read',
+              'product:create',
+              'product:update',
+              'category:read',
+              'category:update'
+              'category:create',
+              'content:read',
+              'content:create',
+              'content:update',
+              'content:delete',
+              'manufacturer:read',
+              'order:create',
+              'order:update',
+              'order:read',
+              'pickpoint:read',
+              'price:read',
+              'production:read',
+              'production:update',
+              'production:create',
+              'storage:read',
+              'warehouse:read',
+              'user:read'
+              ]
+
 router = APIRouter(
     prefix='/users',
     tags=['User'],
@@ -61,7 +86,7 @@ async def login(user: User):
                                                  user_data['mail'],
                                                  1,
                                                  1))
-                            scopes = []
+                            scopes = user_scopes
                         else:
                             result = dict(result)
                             user_role = result.get('role_id')
@@ -95,30 +120,7 @@ async def login(user: User):
                                           'self:read'
                                           ]
                             elif user_role == 2:
-                                scopes = ['user:read',
-                                          'product:read',
-                                          'product:create',
-                                          'product:update',
-                                          'category:read',
-                                          'category:update'
-                                          'category:create',
-                                          'content:read',
-                                          'content:create',
-                                          'content:update',
-                                          'content:delete',
-                                          'manufacturer:read',
-                                          'order:create',
-                                          'order:update',
-                                          'order:read',
-                                          'pickpoint:read',
-                                          'price:read',
-                                          'production:read',
-                                          'production:update',
-                                          'production:create',
-                                          'storage:read',
-                                          'warehouse:read',
-                                          'user:read'
-                                          ]
+                                scopes = user_scopes
                             elif user_role == 3:
                                 scopes = ['user:read',
                                           'user:update',
@@ -282,6 +284,7 @@ async def login(user: UserUpdate, current_user=Security(get_current_user, scopes
                 else:
                     return JSONResponse(status_code=404,
                                         content={'detail': f'User with login: {current_user} not found.'}, )
+            connection.commit()
     except Exception as err:
         lf = '\n'
         logger.error(f'{traceback.format_exc().replace(lf, "")} : {str(err)}')
