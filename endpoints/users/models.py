@@ -12,6 +12,7 @@ class UserInfo(BaseModel):
     id: int
     login: str
     role: str
+    role_id: int
     fio: str
     email: str
     phone: Union[str, None] = None
@@ -19,7 +20,7 @@ class UserInfo(BaseModel):
 
 
 class UserUpdate(BaseModel):
-    role_id: int
+    role: int
     phone: Union[str, None] = None
     active: int
 

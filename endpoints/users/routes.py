@@ -176,7 +176,8 @@ async def info(current_user=Security(get_current_user, scopes=['self:read'])):
                                 usr.auth_source,
                                 usr.active,
                                 usr.created,
-                                usr.created
+                                usr.created,
+                                rls.id as 'role_id'
                          FROM `users` usr LEFT JOIN `user_roles` rls ON usr.role_id = rls.id
                          WHERE usr.login = '{0}'""".format(current_user)
                 cursor.execute(sql)
@@ -187,6 +188,7 @@ async def info(current_user=Security(get_current_user, scopes=['self:read'])):
                         'id': result.get('id'),
                         'login': result.get('login'),
                         'role': result.get('title'),
+                        'role_id': result.get('role_id'),
                         'fio': result.get('fio'),
                         'email': result.get('email'),
                         'phone': result.get('phone'),
