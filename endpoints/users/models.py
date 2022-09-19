@@ -11,7 +11,7 @@ class User(BaseModel):
 class UserInfo(BaseModel):
     id: int
     login: str
-    role_id: int
+    role: str
     fio: str
     email: str
     phone: Union[str, None] = None

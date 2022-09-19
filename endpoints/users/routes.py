@@ -165,7 +165,20 @@ async def info(current_user=Security(get_current_user, scopes=['self:read'])):
                                      cursorclass=pymysql.cursors.DictCursor)
         with connection:
             with connection.cursor() as cursor:
-                sql = """SELECT * FROM `users` WHERE `login`='{0}'""".format(current_user)
+                # sql = """SELECT * FROM `users` WHERE `login`='{0}'""".format(current_user)
+                sql = """SELECT usr.id,
+                                usr.guid,
+                                usr.login,
+                                rls.title,
+                                usr.fio,
+                                usr.email,
+                                usr.phone,
+                                usr.auth_source,
+                                usr.active,
+                                usr.created,
+                                usr.created
+                         FROM `users` usr LEFT JOIN `user_roles` rls ON usr.role_id = rls.id
+                         WHERE usr.login = '{0}'""".format(current_user)
                 cursor.execute(sql)
                 result = cursor.fetchone()
                 result = dict(result)
@@ -173,7 +186,7 @@ async def info(current_user=Security(get_current_user, scopes=['self:read'])):
                     return {
                         'id': result.get('id'),
                         'login': result.get('login'),
-                        'role_id': result.get('role_id'),
+                        'role': result.get('title'),
                         'fio': result.get('fio'),
                         'email': result.get('email'),
                         'phone': result.get('phone'),
