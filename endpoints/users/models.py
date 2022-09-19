@@ -18,6 +18,12 @@ class UserInfo(BaseModel):
     active: int
 
 
+class UserUpdate(BaseModel):
+    role_id: int
+    phone: Union[str, None] = None
+    active: int
+
+
 class Token(BaseModel):
     access_token: str
     token_type: str

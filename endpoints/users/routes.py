@@ -1,7 +1,7 @@
 from app_logger import logger
 from config import (DB_HOST, DB_NAME, DB_USER, DB_PASSWORD, JWT_EXPIRE_MINUTES, LDAP_SERVER_NAME, LDAP_BIND_USER_NAME,
                     LDAP_BIND_USER_PASSWORD)
-from .models import User, UserInfo, Token
+from .models import User, UserInfo, Token, UserUpdate
 from .utils import create_access_token, authenticate_user, get_current_user, ldap_register
 from fastapi import APIRouter, status, HTTPException, Depends, Security
 from fastapi.responses import JSONResponse
@@ -203,11 +203,15 @@ async def info(current_user=Security(get_current_user, scopes=['self:read'])):
                 cursor.execute(sql)
                 result = cursor.fetchone()
                 result = dict(result)
-                user_id = result.get('id')
-                sql = """SELECT * FROM `orders` WHERE `user_id`='{0}'""".format(user_id)
-                cursor.execute(sql)
-                result = cursor.fetchall()
-                return result
+                if result:
+                    user_id = result.get('id')
+                    sql = """SELECT * FROM `orders` WHERE `user_id`='{0}'""".format(user_id)
+                    cursor.execute(sql)
+                    result = cursor.fetchall()
+                    return result
+                else:
+                    return JSONResponse(status_code=404,
+                                        content={'detail': f'User with login: {current_user} not found.'}, )
     except Exception as err:
         lf = '\n'
         logger.error(f'{traceback.format_exc().replace(lf, "")} : {str(err)}')
@@ -229,6 +233,40 @@ async def login(current_user=Security(get_current_user, scopes=['user:read'])):
                 cursor.execute(sql)
                 result = cursor.fetchall()
                 return result
+    except Exception as err:
+        lf = '\n'
+        logger.error(f'{traceback.format_exc().replace(lf, "")} : {str(err)}')
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail=f'{traceback.format_exc()} : {str(err)}')
+
+
+@router.patch('/')
+async def login(user: UserUpdate, current_user=Security(get_current_user, scopes=['user:read'])):
+    try:
+        connection = pymysql.connect(host=DB_HOST,
+                                     user=DB_USER,
+                                     password=DB_PASSWORD,
+                                     database=DB_NAME,
+                                     cursorclass=pymysql.cursors.DictCursor)
+        with connection:
+            with connection.cursor() as cursor:
+                sql = """SELECT * FROM `users` WHERE `login`='{0}'""".format(current_user)
+                cursor.execute(sql)
+                result = cursor.fetchone()
+                result = dict(result)
+                if result:
+                    user_id = result.get('id')
+                    sql = """UPDATE `users` SET  `role_id`='{0}',
+                                                 `phone`='{1}',
+                                                 `active`='{2}' 
+                             WHERE `id`={3}}""".format(user.role_id,
+                                                       user.phone,
+                                                       user.active,
+                                                       user_id)
+                    cursor.execute(sql)
+                else:
+                    return JSONResponse(status_code=404,
+                                        content={'detail': f'User with login: {current_user} not found.'}, )
     except Exception as err:
         lf = '\n'
         logger.error(f'{traceback.format_exc().replace(lf, "")} : {str(err)}')
