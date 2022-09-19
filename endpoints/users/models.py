@@ -20,7 +20,7 @@ class UserInfo(BaseModel):
 
 
 class UserUpdate(BaseModel):
-    role: int
+    role_id: int
     phone: Union[str, None] = None
     active: int
 
