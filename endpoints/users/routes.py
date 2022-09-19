@@ -259,10 +259,10 @@ async def login(user: UserUpdate, current_user=Security(get_current_user, scopes
                     sql = """UPDATE `users` SET  `role_id`='{0}',
                                                  `phone`='{1}',
                                                  `active`='{2}' 
-                             WHERE `id`={3}}""".format(user.role_id,
-                                                       user.phone,
-                                                       user.active,
-                                                       user_id)
+                             WHERE `id`={3}""".format(user.role_id,
+                                                      user.phone,
+                                                      user.active,
+                                                      user_id)
                     cursor.execute(sql)
                 else:
                     return JSONResponse(status_code=404,

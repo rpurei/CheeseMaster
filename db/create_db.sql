@@ -152,7 +152,7 @@
 # 	PRIMARY KEY (`id`)
 # );
 ######
-# INSERT INTO user_roles(`title`) VALUES (N'Администратор'),(N'Сыровар'),(N'Покупатель')
+# INSERT INTO user_roles(`title`) VALUES (N'Администратор'),(N'Сыровар'),(N'Продавец'),(N'Покупатель')
 # CREATE TABLE `storages` (
 # 	`id` INT NOT NULL AUTO_INCREMENT,
 # 	`name` TEXT,
