@@ -157,8 +157,8 @@ async def update_content(content: ContentUpdate, content_id: int,
                         current_amount = float(result.get('amount'))
                         current_reserve = float(result.get('reserve'))
                         if content.operation == 1:
-                            amount = current_amount + old_amount - content.amount
-                            reserved = current_reserve + content.amount - old_amount
+                            amount = current_amount + old_amount - content.amount if old_amount != content.amount else current_amount - content.amount
+                            reserved = current_reserve + content.amount - old_amount if old_amount != content.amount else current_reserve + content.amount
                             if amount < 0:
                                 raise ValueError('Amount can\'t be negative')
                         elif content.operation == 2:
@@ -172,7 +172,6 @@ async def update_content(content: ContentUpdate, content_id: int,
                         if content.operation == 1 or content.operation == 2 or content.operation == 3:
                             sql = """UPDATE `warehouses` SET `amount`='{0}',`reserve`='{1}'
                                      WHERE `id`='{2}'""".format(amount, reserved, record_id)
-                            logger.info(sql)
                             cursor.execute(sql)
                     else:
                         sql = """SELECT `item_measure` FROM `prices` 
