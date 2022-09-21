@@ -78,13 +78,14 @@ async def add_content(content: ContentIn, current_user=Security(get_current_user
                                                                `amount`,
                                                                `item_measure`,
                                                                `active`,
-                                                               `author_id`)
+                                                               `author_id`) 
                                      VALUES (%s,%s,%s,%s,%s,%s)""".format(content.storage_id,
                                                                           content.product_id,
                                                                           content.amount,
                                                                           item_measure,
-                                                                          1,
+                                                                          '1',
                                                                           content.author_id)
+                            logger.info(sql)
                             cursor.execute(sql)
                         else:
                             return JSONResponse(status_code=404,
