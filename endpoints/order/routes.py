@@ -5,6 +5,7 @@ from ..users.utils import get_current_user
 from fastapi import APIRouter, status, HTTPException, Security
 from fastapi.responses import JSONResponse
 import pymysql.cursors
+import traceback
 
 router = APIRouter(
     prefix='/orders',

@@ -16,6 +16,20 @@ class ContentIn(BaseModel):
     author_id: int
 
 
+class ContentUpdate(BaseModel):
+    date: datetime.date
+    order_id: int
+    product_id: int
+    manufacturer_id: int
+    storage_id: int = 0
+    amount: float
+    price_id: int
+    status: Union[str, None] = None
+    comment: Union[str, None] = None
+    author_id: int
+    operation: int
+
+
 class ContentOut(BaseModel):
     id: int
     date: datetime.date
