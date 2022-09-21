@@ -51,10 +51,10 @@ async def add_production(production: ProductionIn,
                                                                                        production.product_id)
                     cursor.execute(sql)
                     result = cursor.fetchone()
-                    result = dict(result)
-                    record_id = result.get('id')
-                    current_amount = float(result.get('amount'))
                     if result:
+                        result = dict(result)
+                        record_id = result.get('id')
+                        current_amount = float(result.get('amount'))
                         amount = current_amount + production.amount
                         sql = """UPDATE `warehouses` SET `amount`='{0}'
                                  WHERE `id`='{1}'""".format(amount, record_id)
@@ -100,9 +100,9 @@ async def update_production(production: ProductionIn, production_id: int,
                     sql = 'SELECT `ID`,`amount` FROM `productions` WHERE `ID`={0}'.format(production_id)
                     cursor.execute(sql)
                     result = cursor.fetchone()
-                    result = dict(result)
-                    old_amount = result.get('amount')
                     if result:
+                        result = dict(result)
+                        old_amount = result.get('amount')
                         sql = """UPDATE `productions` 
                                  SET `product_id`='{0}',
                                      `manufacturer_id`='{1}',
@@ -122,16 +122,15 @@ async def update_production(production: ProductionIn, production_id: int,
                                                             production.author_id,
                                                             production_id)
                         cursor.execute(sql)
-                        ########################
                         sql = """SELECT `id`,`amount` FROM `warehouses` 
                                  WHERE `storage_id`='{0}' AND `product_id`='{1}'""".format(production.storage_id,
                                                                                            production.product_id)
                         cursor.execute(sql)
                         result = cursor.fetchone()
-                        result = dict(result)
-                        record_id = result.get('id')
-                        current_amount = float(result.get('amount'))
                         if result:
+                            result = dict(result)
+                            record_id = result.get('id')
+                            current_amount = float(result.get('amount'))
                             amount = current_amount - old_amount + production.amount
                             sql = """UPDATE `warehouses` SET `amount`='{0}'
                                      WHERE `id`='{1}'""".format(amount, record_id)
@@ -150,7 +149,6 @@ async def update_production(production: ProductionIn, production_id: int,
                                                                           1,
                                                                           production.author_id)
                             cursor.execute(sql)
-                        ########################
                     else:
                         return JSONResponse(status_code=404,
                                             content={'detail': f'Production with ID: {production_id} not found.'}, )
@@ -233,8 +231,8 @@ async def get_production(production_id: int, current_user=Security(get_current_u
                     sql = """SELECT * FROM `productions` WHERE `id`='{0}'""".format(production_id)
                     cursor.execute(sql)
                     result = cursor.fetchone()
-                    result = dict(result)
                     if result:
+                        result = dict(result)
                         return {'id': result.get('id'),
                                 'date': result.get('date'),
                                 'product_id': result.get('product_id'),

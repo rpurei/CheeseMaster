@@ -53,11 +53,11 @@ async def add_content(content: ContentIn, current_user=Security(get_current_user
                                                                                        content.product_id)
                     cursor.execute(sql)
                     result = cursor.fetchone()
-                    result = dict(result)
-                    record_id = result.get('id')
-                    current_amount = float(result.get('amount'))
-                    current_reserve = float(result.get('reserve'))
                     if result:
+                        result = dict(result)
+                        record_id = result.get('id')
+                        current_amount = float(result.get('amount'))
+                        current_reserve = float(result.get('reserve'))
                         amount = current_amount - content.amount
                         reserved = current_reserve + content.amount
                         if amount < 0:
@@ -117,9 +117,9 @@ async def update_content(content: ContentUpdate, content_id: int,
                     sql = 'SELECT `id`,`amount` FROM `order_contents` WHERE `id`={0}'.format(content_id)
                     cursor.execute(sql)
                     result = cursor.fetchone()
-                    result = dict(result)
-                    old_amount = float(result.get('amount'))
                     if result:
+                        result = dict(result)
+                        old_amount = float(result.get('amount'))
                         sql = """UPDATE `order_contents` 
                                  SET `comment`='{0}',
                                      `date`='{1}',
@@ -151,11 +151,11 @@ async def update_content(content: ContentUpdate, content_id: int,
                                                                                        content.product_id)
                     cursor.execute(sql)
                     result = cursor.fetchone()
-                    result = dict(result)
-                    record_id = result.get('id')
-                    current_amount = float(result.get('amount'))
-                    current_reserve = float(result.get('reserve'))
                     if result:
+                        result = dict(result)
+                        record_id = result.get('id')
+                        current_amount = float(result.get('amount'))
+                        current_reserve = float(result.get('reserve'))
                         if content.operation == 1:
                             amount = current_amount + old_amount - content.amount
                             reserved = current_reserve + content.amount - old_amount
@@ -290,8 +290,8 @@ async def get_content(content_id: int, current_user=Security(get_current_user, s
                     sql = """SELECT * FROM `order_contents` WHERE `id`='{0}'""".format(content_id)
                     cursor.execute(sql)
                     result = cursor.fetchone()
-                    result = dict(result)
                     if result:
+                        result = dict(result)
                         return {'id': result.get('id'),
                                 'date': result.get('date'),
                                 'order_id': result.get('order_id'),
