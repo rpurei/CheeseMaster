@@ -172,6 +172,7 @@ async def update_content(content: ContentUpdate, content_id: int,
                         if content.operation == 1 or content.operation == 2 or content.operation == 3:
                             sql = """UPDATE `warehouses` SET `amount`='{0}',`reserve`='{1}'
                                      WHERE `id`='{2}'""".format(amount, reserved, record_id)
+                            logger.info(sql)
                             cursor.execute(sql)
                     else:
                         sql = """SELECT `item_measure` FROM `prices` 
