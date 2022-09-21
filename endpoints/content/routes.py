@@ -85,7 +85,6 @@ async def add_content(content: ContentIn, current_user=Security(get_current_user
                                                                                             item_measure,
                                                                                             1,
                                                                                             content.author_id)
-                            logger.info(sql)
                             cursor.execute(sql)
                         else:
                             return JSONResponse(status_code=404,
@@ -170,7 +169,7 @@ async def update_content(content: ContentUpdate, content_id: int,
                             reserved = current_reserve - content.amount
                             if reserved < 0:
                                 raise ValueError('Reserve can\'t be negative')
-                        if content.operation == 1 or content.operation == 2:
+                        if content.operation == 1 or content.operation == 2 or content.operation == 3:
                             sql = """UPDATE `warehouses` SET `amount`='{0}',`reserve`='{1}'
                                      WHERE `id`='{2}'""".format(amount, reserved, record_id)
                             cursor.execute(sql)
