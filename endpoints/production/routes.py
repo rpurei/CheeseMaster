@@ -66,12 +66,12 @@ async def add_production(production: ProductionIn,
                                                            `item_measure`,
                                                            `active`,
                                                            `author_id`)
-                                 VALUES (%s,%s,%s,%s,%s,%s)""".format(production.storage_id,
-                                                                      production.product_id,
-                                                                      production.amount,
-                                                                      production.item_measure,
-                                                                      1,
-                                                                      production.author_id)
+                                 VALUES ('{0}','{1}','{2}','{3}','{4}','{5}')""".format(production.storage_id,
+                                                                                        production.product_id,
+                                                                                        production.amount,
+                                                                                        production.item_measure,
+                                                                                        1,
+                                                                                        production.author_id)
                         cursor.execute(sql)
                 except Exception as err:
                     logger.error(f'Error: {str(err)}')
@@ -142,12 +142,12 @@ async def update_production(production: ProductionIn, production_id: int,
                                                                `item_measure`,
                                                                `active`,
                                                                `author_id`)
-                                     VALUES (%s,%s,%s,%s,%s,%s)""".format(production.storage_id,
-                                                                          production.product_id,
-                                                                          production.amount,
-                                                                          production.item_measure,
-                                                                          1,
-                                                                          production.author_id)
+                                     VALUES ('{0}','{1}','{2}','{3}','{4}','{5}')""".format(production.storage_id,
+                                                                                            production.product_id,
+                                                                                            production.amount,
+                                                                                            production.item_measure,
+                                                                                            1,
+                                                                                            production.author_id)
                             cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
