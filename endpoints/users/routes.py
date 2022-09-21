@@ -12,12 +12,9 @@ import traceback
 
 
 user_scopes = ['user:read',
+              'user:update',
               'product:read',
-              'product:create',
-              'product:update',
               'category:read',
-              'category:update'
-              'category:create',
               'content:read',
               'content:create',
               'content:update',
@@ -25,15 +22,9 @@ user_scopes = ['user:read',
               'manufacturer:read',
               'order:create',
               'order:update',
-              'order:read',
               'pickpoint:read',
               'price:read',
-              'production:read',
-              'production:update',
-              'production:create',
-              'storage:read',
-              'warehouse:read',
-              'user:read'
+              'self:read'
               ]
 
 router = APIRouter(
@@ -120,12 +111,13 @@ async def login(user: User):
                                           'self:read'
                                           ]
                             elif user_role == 2:
-                                scopes = user_scopes
-                            elif user_role == 3:
                                 scopes = ['user:read',
-                                          'user:update',
                                           'product:read',
+                                          'product:create',
+                                          'product:update',
                                           'category:read',
+                                          'category:update'
+                                          'category:create',
                                           'content:read',
                                           'content:create',
                                           'content:update',
@@ -133,10 +125,19 @@ async def login(user: User):
                                           'manufacturer:read',
                                           'order:create',
                                           'order:update',
+                                          'order:read',
                                           'pickpoint:read',
                                           'price:read',
+                                          'production:read',
+                                          'production:update',
+                                          'production:create',
+                                          'storage:read',
+                                          'warehouse:read',
+                                          'user:read',
                                           'self:read'
                                           ]
+                            elif user_role == 3:
+                                scopes = user_scopes
                             else:
                                 raise ValueError('Unknown role')
                     connection.commit()
