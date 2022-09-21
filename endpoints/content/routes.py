@@ -164,6 +164,9 @@ async def update_content(content: ContentUpdate, content_id: int,
                         elif content.operation == 2:
                             amount = current_amount
                             reserved = current_reserve - content.amount
+                        elif content.operation == 3:
+                            amount = current_amount + content.amount
+                            reserved = current_reserve - content.amount
                             if reserved < 0:
                                 raise ValueError('Reserve can\'t be negative')
                         if content.operation == 1 or content.operation == 2:
