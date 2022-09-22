@@ -192,13 +192,15 @@ async def update_content(content: ContentUpdate, content_id: int,
                                                                `amount`,
                                                                `item_measure`,
                                                                `active`,
-                                                               `author_id`)
-                                     VALUES ('{0}','{1}','{2}','{3}','{4}','{5}')""".format(content.storage_id,
-                                                                                            content.product_id,
-                                                                                            content.amount,
-                                                                                            item_measure,
-                                                                                            1,
-                                                                                            content.author_id)
+                                                               `author_id`,
+                                                               `reserve`)
+                                     VALUES ('{0}','{1}','{2}','{3}','{4}','{5}','{6}')""".format(content.storage_id,
+                                                                                                  content.product_id,
+                                                                                                  content.amount,
+                                                                                                  item_measure,
+                                                                                                  1,
+                                                                                                  content.author_id,
+                                                                                                  content.amount)
                             cursor.execute(sql)
                         else:
                             return JSONResponse(status_code=404,
