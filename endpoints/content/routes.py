@@ -159,11 +159,15 @@ async def update_content(content: ContentUpdate, content_id: int,
                         if content.operation == 1:
                             amount = current_amount + old_amount - content.amount if old_amount != content.amount else current_amount - content.amount
                             reserved = current_reserve + content.amount - old_amount if old_amount != content.amount else current_reserve + content.amount
+                            logger.info(
+                                f'Edit operation, current amount: {current_amount}, content amount: {content.amount}, current reserve: {current_reserve} old amount: {old_amount}')
                             if amount < 0:
                                 raise ValueError('Amount can\'t be negative')
                         elif content.operation == 2:
                             amount = current_amount
                             reserved = current_reserve - content.amount
+                            logger.info(
+                                f'Issue operation, current amount: {current_amount}, content amount: {content.amount}, current reserve: {current_reserve}')
                         elif content.operation == 3:
                             amount = current_amount + content.amount
                             reserved = current_reserve - content.amount
