@@ -165,9 +165,10 @@ async def update_content(content: ContentUpdate, content_id: int,
                             amount = current_amount
                             reserved = current_reserve - content.amount
                         elif content.operation == 3:
-                            logger.info(f'Cancel operation, current amount: {current_amount}, content amount: {content.amount}, current reserve: {current_reserve}')
                             amount = current_amount + content.amount
                             reserved = current_reserve - content.amount
+                            logger.info(
+                                f'Cancel operation, current amount: {current_amount}, content amount: {content.amount}, current reserve: {current_reserve}')
                             if reserved < 0:
                                 raise ValueError('Reserve can\'t be negative')
                         if content.operation == 1 or content.operation == 2 or content.operation == 3:
