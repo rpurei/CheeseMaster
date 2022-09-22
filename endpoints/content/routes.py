@@ -152,6 +152,7 @@ async def update_content(content: ContentUpdate, content_id: int,
                     cursor.execute(sql)
                     result = cursor.fetchone()
                     if result:
+                        logger.info('-------------------')
                         result = dict(result)
                         record_id = result.get('id')
                         current_amount = float(result.get('amount'))
@@ -180,6 +181,7 @@ async def update_content(content: ContentUpdate, content_id: int,
                                      WHERE `id`='{2}'""".format(amount, reserved, record_id)
                             cursor.execute(sql)
                     else:
+                        logger.info('-------------------')
                         sql = """SELECT `item_measure` FROM `prices` 
                                  WHERE `id`='{0}'""".format(content.price_id)
                         cursor.execute(sql)
