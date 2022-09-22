@@ -138,6 +138,25 @@ async def login(user: User):
                                           ]
                             elif user_role == 3:
                                 scopes = user_scopes
+                            elif user_role == 4:
+                                scopes = ['user:read',
+                                          'product:read',
+                                          'category:read',
+                                          'content:read',
+                                          'content:create',
+                                          'content:update',
+                                          'content:delete',
+                                          'manufacturer:read',
+                                          'order:update',
+                                          'order:read',
+                                          'pickpoint:read',
+                                          'price:read',
+                                          'production:read',
+                                          'storage:read',
+                                          'warehouse:read',
+                                          'user:read',
+                                          'self:read'
+                                          ]
                             else:
                                 raise ValueError('Unknown role')
                     connection.commit()
