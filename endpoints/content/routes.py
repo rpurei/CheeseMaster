@@ -117,6 +117,7 @@ async def update_content(content: ContentUpdate, content_id: int,
                     sql = 'SELECT `id`,`amount` FROM `order_contents` WHERE `id`={0}'.format(content_id)
                     cursor.execute(sql)
                     result = cursor.fetchone()
+                    logger.info(f'Request: {content}')
                     if result:
                         result = dict(result)
                         old_amount = float(result.get('amount'))
