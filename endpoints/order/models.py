@@ -1,6 +1,7 @@
+from ..content.models import ContentOut
 import datetime
 from pydantic import BaseModel
-from typing import Union
+from typing import Union, List
 
 
 class OrderIn(BaseModel):
@@ -26,3 +27,18 @@ class OrderOut(BaseModel):
     author_id: int
     created: datetime.datetime
     updated: datetime.datetime = None
+
+
+class OrderContentOut(BaseModel):
+    id: int
+    user_id: int
+    date: datetime.date
+    delivery_date: datetime.date
+    payment_type: int
+    status: Union[str, None] = None
+    pickpoint_id: int
+    comment: Union[str, None] = None
+    author_id: int
+    created: datetime.datetime
+    updated: datetime.datetime = None
+    content: List[ContentOut]

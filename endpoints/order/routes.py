@@ -1,6 +1,6 @@
 from app_logger import logger
 from config import DB_HOST, DB_NAME, DB_USER, DB_PASSWORD
-from .models import OrderIn, OrderOut
+from .models import OrderIn, OrderOut, OrderContentOut
 from ..users.utils import get_current_user
 from fastapi import APIRouter, status, HTTPException, Security
 from fastapi.responses import JSONResponse
@@ -181,6 +181,69 @@ async def get_order(order_id: int, current_user=Security(get_current_user, scope
                             'created': result.get('created'),
                             'updated': result.get('updated')
                         }
+                    else:
+                        return JSONResponse(status_code=404,
+                                            content={'detail': f'Order with ID: {order_id} not found.'}, )
+                except Exception as err:
+                    logger.error(f'Error: {str(err)}')
+                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
+    except Exception as err:
+        logger.error(f'Error: {str(err)}')
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
+
+
+@router.get('/{order_id}/content', status_code=status.HTTP_200_OK, response_model=OrderContentOut)
+async def get_order_content(order_id: int, current_user=Security(get_current_user, scopes=['order:read'])):
+    try:
+        connection = pymysql.connect(host=DB_HOST,
+                                     user=DB_USER,
+                                     password=DB_PASSWORD,
+                                     database=DB_NAME,
+                                     cursorclass=pymysql.cursors.DictCursor)
+        with connection:
+            with connection.cursor() as cursor:
+                try:
+                    sql = """SELECT * FROM `orders` WHERE `id`='{0}'""".format(order_id)
+                    cursor.execute(sql)
+                    result = cursor.fetchone()
+                    sql = """SELECT * FROM `order_contents` WHERE `order_id`='{0}'""".format(order_id)
+                    cursor.execute(sql)
+                    result_content = cursor.fetchall()
+                    content_list = []
+                    for content in result_content:
+                        content = dict(content)
+                        dct = {
+                                'id': content.get('id'),
+                                'date': content.get('date'),
+                                'order_id': content.get('order_id'),
+                                'product_id': content.get('product_id'),
+                                'manufacturer_id': content.get('manufacturer_id'),
+                                'storage_id': content.get('storage_id'),
+                                'amount': content.get('amount'),
+                                'price_id': content.get('price_id'),
+                                'status': content.get('status'),
+                                'comment': content.get('comment'),
+                                'author_id': content.get('author_id'),
+                                'created': content.get('created'),
+                                'updated': content.get('updated')
+                              }
+                        content_list.append(dct)
+                    if result:
+                        result = dict(result)
+                        return {
+                                'id': result.get('id'),
+                                'user_id': result.get('user_id'),
+                                'date': result.get('order_date'),
+                                'delivery_date': result.get('delivery_date'),
+                                'payment_type': result.get('payment_type'),
+                                'status': result.get('status'),
+                                'pickpoint_id': result.get('pickpoint_id'),
+                                'comment': result.get('comment'),
+                                'author_id': result.get('author_id'),
+                                'created': result.get('created'),
+                                'updated': result.get('updated'),
+                                'content': content_list
+                               }
                     else:
                         return JSONResponse(status_code=404,
                                             content={'detail': f'Order with ID: {order_id} not found.'}, )
