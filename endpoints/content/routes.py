@@ -159,8 +159,8 @@ async def update_content(content: ContentUpdate, content_id: int,
                         current_amount = float(result.get('amount'))
                         current_reserve = float(result.get('reserve'))
                         if content.operation == 1:
-                            amount = current_amount + old_amount - content.amount if old_amount != content.amount else current_amount - content.amount
-                            reserved = current_reserve + content.amount - old_amount if old_amount != content.amount else current_reserve + content.amount
+                            amount = current_amount + old_amount #- content.amount if old_amount != content.amount else current_amount - content.amount
+                            reserved = current_reserve + content.amount #- old_amount if old_amount != content.amount else current_reserve + content.amount
                             logger.info(
                                 f'Edit operation, current amount: {current_amount}, content amount: {content.amount}, current reserve: {current_reserve} old amount: {old_amount}')
                             if amount < 0:
