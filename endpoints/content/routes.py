@@ -187,7 +187,7 @@ async def update_content(content: ContentUpdate, content_id: int,
                                  WHERE `id`='{0}'""".format(content.price_id)
                         cursor.execute(sql)
                         result = cursor.fetchone()
-                        if result:
+                        if result and (content.storage_id !=0 or content.storage_id is not None):
                             result = dict(result)
                             item_measure = result.get('item_measure')
                             sql = """INSERT INTO `warehouses` (`storage_id`,
