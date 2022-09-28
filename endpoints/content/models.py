@@ -25,7 +25,7 @@ class ContentUpdate(BaseModel):
     order_id: int
     product_id: int
     manufacturer_id: int
-    storage_id: int = 0
+    storage_id: int
     amount: float
     price_id: int
     status: Union[str, None] = None
@@ -40,7 +40,7 @@ class ContentOut(BaseModel):
     order_id: int
     product_id: int
     manufacturer_id: int
-    storage_id: int = 0
+    storage_id: int
     amount: float
     price_id: int
     status: Union[str, None] = None

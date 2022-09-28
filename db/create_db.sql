@@ -164,4 +164,5 @@
 # 	`author_id` INT NOT NULL,
 # 	PRIMARY KEY (`id`)
 # );
+#INSERT INTO `storages` (`name`, `active`, `author_id`) VALUES ('Не выбранный склад', 1, 1)
 
