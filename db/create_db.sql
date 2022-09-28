@@ -58,6 +58,7 @@
 # 	`author_id` INT NOT NULL,
 # 	PRIMARY KEY (`id`)
 # );
+# INSERT INTO `manufacturers` (`name`,`address`,`author_id`) VALUES ('Сыроварня Мазикино','с. Мазикино',1),('Сыроварня Яковлево','п. Яковлево',1)
 #
 # CREATE TABLE `productions` (
 # 	`id` INT NOT NULL AUTO_INCREMENT,
