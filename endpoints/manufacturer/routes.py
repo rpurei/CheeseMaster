@@ -175,4 +175,34 @@ def get_manufacturer_by_id(manufacturer_id: int):
 
 @router.get('/{manufacturer_id}', status_code=status.HTTP_200_OK, response_model=ManufacturerOut)
 async def get_manufacturer(manufacturer_id: int, current_user=Security(get_current_user, scopes=['manufacturer:read'])):
-    get_manufacturer_by_id(manufacturer_id)
+    try:
+        connection = pymysql.connect(host=DB_HOST,
+                                     user=DB_USER,
+                                     password=DB_PASSWORD,
+                                     database=DB_NAME,
+                                     cursorclass=pymysql.cursors.DictCursor)
+        with connection:
+            with connection.cursor() as cursor:
+                try:
+                    sql = """SELECT * FROM `manufacturers` WHERE `id`='{0}'""".format(manufacturer_id)
+                    cursor.execute(sql)
+                    result = cursor.fetchone()
+                    result = dict(result)
+                    if result:
+                        return {
+                            'id': result.get('id'),
+                            'name': result.get('name'),
+                            'address': result.get('address'),
+                            'author_id': result.get('author_id'),
+                            'created': result.get('created'),
+                            'updated': result.get('updated')
+                        }
+                    else:
+                        return JSONResponse(status_code=404,
+                                            content={"detail": f'Manufacturer with ID: {manufacturer_id} not found.'}, )
+                except Exception as err:
+                    logger.error(f'Error: {str(err)}')
+                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
+    except Exception as err:
+        logger.error(f'Error: {str(err)}')
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')

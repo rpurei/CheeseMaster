@@ -175,4 +175,35 @@ def get_storage_by_id(storage_id: int):
 
 @router.get('/{storage_id}', status_code=status.HTTP_200_OK, response_model=StorageOut)
 async def get_storage(storage_id: int, current_user=Security(get_current_user, scopes=['storage:read'])):
-    get_storage_by_id(storage_id)
+    try:
+        connection = pymysql.connect(host=DB_HOST,
+                                     user=DB_USER,
+                                     password=DB_PASSWORD,
+                                     database=DB_NAME,
+                                     cursorclass=pymysql.cursors.DictCursor)
+        with connection:
+            with connection.cursor() as cursor:
+                try:
+                    sql = """SELECT * FROM `storages` WHERE `id`='{0}'""".format(storage_id)
+                    cursor.execute(sql)
+                    result = cursor.fetchone()
+                    result = dict(result)
+                    if result:
+                        return {'id': result.get('id'),
+                                'name': result.get('name'),
+                                'address': result.get('address'),
+                                'active': result.get('active'),
+                                'comment': result.get('comment'),
+                                'author_id': result.get('author_id'),
+                                'created': result.get('created'),
+                                'updated': result.get('updated')
+                                }
+                    else:
+                        return JSONResponse(status_code=404,
+                                            content={'detail': f'Storage with ID: {storage_id} not found.'}, )
+                except Exception as err:
+                    logger.error(f'Error: {str(err)}')
+                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
+    except Exception as err:
+        logger.error(f'Error: {str(err)}')
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')

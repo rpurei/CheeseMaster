@@ -5,6 +5,7 @@ from ..users.utils import get_current_user
 from fastapi import APIRouter, status, HTTPException, Security
 from fastapi.responses import JSONResponse
 import pymysql.cursors
+import traceback
 
 
 router = APIRouter(
@@ -154,8 +155,8 @@ def get_price_by_id(price_id: int):
                     sql = """SELECT * FROM `prices` WHERE `id`='{0}'""".format(price_id)
                     cursor.execute(sql)
                     result = cursor.fetchone()
-                    result = dict(result)
                     if result:
+                        result = dict(result)
                         return {
                                     'id': result.get('id'),
                                     'product_id': result.get('product_id'),
@@ -168,19 +169,55 @@ def get_price_by_id(price_id: int):
                                }
                     else:
                         return JSONResponse(status_code=404,
-                                            content={'detail': f'Price with ID: {price_id} not found.'},)
+                                            content={'detail': f'Price with ID: {price_id} not found.'})
                 except Exception as err:
-                    err_message = ''
-                    for err_item in err.args:
-                        err_message += err_item
-                    logger.error(f'Error: {str(err)} {err_message}')
+                    lf = '\n'
+                    logger.error(f'{traceback.format_exc().replace(lf, "")} : {str(err)}')
                     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                                        detail=f'Error {str(err)} {err_message}')
+                                        detail=f'{traceback.format_exc()} : {str(err)}')
     except Exception as err:
-        logger.error(f'Error: {str(err)}')
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
+        lf = '\n'
+        logger.error(f'{traceback.format_exc().replace(lf, "")} : {str(err)}')
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail=f'{traceback.format_exc()} : {str(err)}')
 
 
 @router.get('/{price_id}', status_code=status.HTTP_200_OK, response_model=PriceOut)
 async def get_price(price_id: int, current_user=Security(get_current_user, scopes=['price:read'])):
-    get_price_by_id(price_id)
+    try:
+        connection = pymysql.connect(host=DB_HOST,
+                                     user=DB_USER,
+                                     password=DB_PASSWORD,
+                                     database=DB_NAME,
+                                     cursorclass=pymysql.cursors.DictCursor)
+        with connection:
+            with connection.cursor() as cursor:
+                try:
+                    sql = """SELECT * FROM `prices` WHERE `id`='{0}'""".format(price_id)
+                    cursor.execute(sql)
+                    result = cursor.fetchone()
+                    if result:
+                        result = dict(result)
+                        return {
+                            'id': result.get('id'),
+                            'product_id': result.get('product_id'),
+                            'item_measure': result.get('item_measure'),
+                            'item_price': result.get('item_price'),
+                            'active': result.get('active'),
+                            'author_id': result.get('author_id'),
+                            'created': result.get('created'),
+                            'updated': result.get('updated')
+                        }
+                    else:
+                        return JSONResponse(status_code=404,
+                                            content={'detail': f'Price with ID: {price_id} not found.'})
+                except Exception as err:
+                    lf = '\n'
+                    logger.error(f'{traceback.format_exc().replace(lf, "")} : {str(err)}')
+                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                        detail=f'{traceback.format_exc()} : {str(err)}')
+    except Exception as err:
+        lf = '\n'
+        logger.error(f'{traceback.format_exc().replace(lf, "")} : {str(err)}')
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail=f'{traceback.format_exc()} : {str(err)}')
