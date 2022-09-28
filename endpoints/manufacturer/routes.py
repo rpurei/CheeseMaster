@@ -139,8 +139,7 @@ async def get_manufacturers(current_user=Security(get_current_user, scopes=['man
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
 
 
-@router.get('/{manufacturer_id}', status_code=status.HTTP_200_OK, response_model=ManufacturerOut)
-async def get_manufacturer(manufacturer_id: int, current_user=Security(get_current_user, scopes=['manufacturer:read'])):
+def get_manufacturer_by_id(manufacturer_id: int):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -172,3 +171,8 @@ async def get_manufacturer(manufacturer_id: int, current_user=Security(get_curre
     except Exception as err:
         logger.error(f'Error: {str(err)}')
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
+
+
+@router.get('/{manufacturer_id}', status_code=status.HTTP_200_OK, response_model=ManufacturerOut)
+async def get_manufacturer(manufacturer_id: int, current_user=Security(get_current_user, scopes=['manufacturer:read'])):
+    get_manufacturer_by_id(manufacturer_id)

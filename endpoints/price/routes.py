@@ -141,8 +141,7 @@ async def get_prices():    #current_user=Security(get_current_user, scopes=['pri
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
 
 
-@router.get('/{price_id}', status_code=status.HTTP_200_OK, response_model=PriceOut)
-async def get_price(price_id: int, current_user=Security(get_current_user, scopes=['price:read'])):
+def get_price_by_id(price_id: int):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -180,3 +179,8 @@ async def get_price(price_id: int, current_user=Security(get_current_user, scope
     except Exception as err:
         logger.error(f'Error: {str(err)}')
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
+
+
+@router.get('/{price_id}', status_code=status.HTTP_200_OK, response_model=PriceOut)
+async def get_price(price_id: int, current_user=Security(get_current_user, scopes=['price:read'])):
+    get_price_by_id(price_id)

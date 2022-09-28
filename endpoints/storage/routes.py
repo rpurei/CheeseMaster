@@ -138,8 +138,7 @@ async def get_storages(current_user=Security(get_current_user, scopes=['storage:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
 
 
-@router.get('/{storage_id}', status_code=status.HTTP_200_OK, response_model=StorageOut)
-async def get_storage(storage_id: int, current_user=Security(get_current_user, scopes=['storage:read'])):
+def get_storage_by_id(storage_id: int):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -172,3 +171,8 @@ async def get_storage(storage_id: int, current_user=Security(get_current_user, s
     except Exception as err:
         logger.error(f'Error: {str(err)}')
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
+
+
+@router.get('/{storage_id}', status_code=status.HTTP_200_OK, response_model=StorageOut)
+async def get_storage(storage_id: int, current_user=Security(get_current_user, scopes=['storage:read'])):
+    get_storage_by_id(storage_id)

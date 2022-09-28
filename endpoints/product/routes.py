@@ -167,9 +167,7 @@ async def get_products():    #current_user=Security(get_current_user, scopes=['p
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
 
 
-@router.get('/{product_id}', status_code=status.HTTP_200_OK, response_model=ProductOut)
-async def get_product(product_id: int, current_user=Security(get_current_user, scopes=['product:read'])):
-
+def get_product_by_id(product_id: int):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -206,3 +204,8 @@ async def get_product(product_id: int, current_user=Security(get_current_user, s
     except Exception as err:
         logger.error(f'Error: {str(err)}')
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
+
+
+@router.get('/{product_id}', status_code=status.HTTP_200_OK, response_model=ProductOut)
+async def get_product(product_id: int, current_user=Security(get_current_user, scopes=['product:read'])):
+    get_product_by_id(product_id)

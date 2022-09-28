@@ -1,4 +1,4 @@
-from ..content.models import ContentOut
+from ..content.models import ContentOut, ContentExtendedOut
 import datetime
 from pydantic import BaseModel
 from typing import Union, List
@@ -41,4 +41,4 @@ class OrderContentOut(BaseModel):
     author_id: int
     created: datetime.datetime
     updated: datetime.datetime = None
-    content: List[ContentOut]
+    content: List[ContentExtendedOut]

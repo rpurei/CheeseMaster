@@ -25,3 +25,4 @@ class ProductOut(BaseModel):
     image_path: str
     created: datetime.datetime
     updated: datetime.datetime = None
+
