@@ -154,8 +154,8 @@ async def get_category(category_id: int, current_user=Security(get_current_user,
                     sql = """SELECT * FROM `categories` WHERE `id`='{0}'""".format(category_id)
                     cursor.execute(sql)
                     result = cursor.fetchone()
-                    result = dict(result)
                     if result:
+                        result = dict(result)
                         return {'id': result.get('id'),
                                 'name': result.get('name'),
                                 'active': result.get('active'),

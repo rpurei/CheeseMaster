@@ -177,8 +177,8 @@ async def get_pickpoint(pickpoint_id: int, current_user=Security(get_current_use
                     sql = """SELECT * FROM `pickpoints` WHERE `id`='{0}'""".format(pickpoint_id)
                     cursor.execute(sql)
                     result = cursor.fetchone()
-                    result = dict(result)
                     if result:
+                        result = dict(result)
                         return {'id': result.get('id'),
                                 'name': result.get('name'),
                                 'address': result.get('address'),

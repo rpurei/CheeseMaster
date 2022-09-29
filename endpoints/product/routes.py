@@ -1,5 +1,5 @@
 from app_logger import logger
-from config import DB_HOST, DB_NAME, DB_USER, DB_PASSWORD, IMAGE_PATH, IMAGE_NAME_LENGTH
+from config import DB_HOST, DB_NAME, DB_USER, DB_PASSWORD
 from .models import ProductIn, ProductOut
 from .utils import image_processing
 from ..users.utils import get_current_user
@@ -78,13 +78,13 @@ async def update_product(product: ProductIn, product_id: int,
                                      `author_id`='{5}',
                                      `image_path`='{6}' 
                                  WHERE `id`='{7}'""".format(product.name,
-                                                          product.active,
-                                                          product.category_id,
-                                                          product.description,
-                                                          product.comment,
-                                                          product.author_id,
-                                                          product_image_path,
-                                                          product_id)
+                                                            product.active,
+                                                            product.category_id,
+                                                            product.description,
+                                                            product.comment,
+                                                            product.author_id,
+                                                            product_image_path,
+                                                            product_id)
                     elif len(result) > 0 and product.image is None and product.ext is None:
                         sql = """UPDATE `products` 
                                  SET `name`='{0}',
@@ -145,7 +145,7 @@ async def delete_product(product_id: int, current_user=Security(get_current_user
 
 
 @router.get('/', status_code=status.HTTP_200_OK)
-async def get_products():    #current_user=Security(get_current_user, scopes=['product:read'])
+async def get_products():
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -180,8 +180,8 @@ def get_product_by_id(product_id: int):
                     sql = """SELECT * FROM `products` WHERE `id`='{0}'""".format(product_id)
                     cursor.execute(sql)
                     result = cursor.fetchone()
-                    result = dict(result)
                     if result:
+                        result = dict(result)
                         return {
                                     'id': result.get('id'),
                                     'name': result.get('name'),
@@ -220,8 +220,8 @@ async def get_product(product_id: int, current_user=Security(get_current_user, s
                     sql = """SELECT * FROM `products` WHERE `id`='{0}'""".format(product_id)
                     cursor.execute(sql)
                     result = cursor.fetchone()
-                    result = dict(result)
                     if result:
+                        result = dict(result)
                         return {
                             'id': result.get('id'),
                             'name': result.get('name'),

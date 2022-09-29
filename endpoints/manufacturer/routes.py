@@ -152,8 +152,8 @@ def get_manufacturer_by_id(manufacturer_id: int):
                     sql = """SELECT * FROM `manufacturers` WHERE `id`='{0}'""".format(manufacturer_id)
                     cursor.execute(sql)
                     result = cursor.fetchone()
-                    result = dict(result)
                     if result:
+                        result = dict(result)
                         return {
                                     'id': result.get('id'),
                                     'name': result.get('name'),
@@ -187,8 +187,8 @@ async def get_manufacturer(manufacturer_id: int, current_user=Security(get_curre
                     sql = """SELECT * FROM `manufacturers` WHERE `id`='{0}'""".format(manufacturer_id)
                     cursor.execute(sql)
                     result = cursor.fetchone()
-                    result = dict(result)
                     if result:
+                        result = dict(result)
                         return {
                             'id': result.get('id'),
                             'name': result.get('name'),

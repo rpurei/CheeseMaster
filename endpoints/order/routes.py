@@ -18,6 +18,38 @@ router = APIRouter(
 )
 
 
+@router.get('/count', status_code=status.HTTP_200_OK)
+async def get_orders_count(current_user=Security(get_current_user, scopes=['order:read'])):
+    try:
+        connection = pymysql.connect(host=DB_HOST,
+                                     user=DB_USER,
+                                     password=DB_PASSWORD,
+                                     database=DB_NAME,
+                                     cursorclass=pymysql.cursors.DictCursor)
+        with connection:
+            with connection.cursor() as cursor:
+                try:
+                    sql = """SELECT COUNT(*) AS `orders_count` FROM `orders`"""
+                    cursor.execute(sql)
+                    result = cursor.fetchone()
+                    if result:
+                        result = dict(result)
+                        return {
+                            'orders_count': result.get('orders_count')
+                        }
+                    else:
+                        return JSONResponse(status_code=404,
+                                            content={'detail': f'Orders not found.'}, )
+                except Exception as err:
+                    logger.error(f'Error: {str(err)}')
+                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
+    except Exception as err:
+        lf = '\n'
+        logger.error(f'{traceback.format_exc().replace(lf, "")} : {str(err)}')
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail=f'{traceback.format_exc()} : {str(err)}')
+
+
 @router.post('/', status_code=status.HTTP_201_CREATED)
 async def add_order(order: OrderIn, current_user=Security(get_current_user, scopes=['order:create'])):
     try:
@@ -140,7 +172,8 @@ async def delete_order(order_id: int, current_user=Security(get_current_user, sc
 
 
 @router.get('/', status_code=status.HTTP_200_OK)
-async def get_orders(current_user=Security(get_current_user, scopes=['order:read'])):
+async def get_orders(limit: int = 100000, offset: int = 0,
+                     current_user=Security(get_current_user, scopes=['order:read'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -150,7 +183,7 @@ async def get_orders(current_user=Security(get_current_user, scopes=['order:read
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = 'SELECT * FROM `orders`'
+                    sql = f'SELECT * FROM `orders` LIMIT {limit} OFFSET {offset}'
                     cursor.execute(sql)
                     result = cursor.fetchall()
                 except Exception as err:
@@ -178,8 +211,8 @@ async def get_order(order_id: int, current_user=Security(get_current_user, scope
                     sql = """SELECT * FROM `orders` WHERE `id`='{0}'""".format(order_id)
                     cursor.execute(sql)
                     result = cursor.fetchone()
-                    result = dict(result)
                     if result:
+                        result = dict(result)
                         return {
                             'id': result.get('id'),
                             'user_id': result.get('user_id'),

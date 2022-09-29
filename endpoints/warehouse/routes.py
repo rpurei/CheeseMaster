@@ -177,8 +177,8 @@ async def get_warehouse(warehouse_id: int, current_user=Security(get_current_use
                     sql = """SELECT * FROM `warehouses` WHERE `id`='{0}'""".format(warehouse_id)
                     cursor.execute(sql)
                     result = cursor.fetchone()
-                    result = dict(result)
                     if result:
+                        result = dict(result)
                         return {
                                     'id': result.get('id'),
                                     'product_id': result.get('product_id'),

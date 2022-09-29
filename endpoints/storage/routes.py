@@ -151,8 +151,8 @@ def get_storage_by_id(storage_id: int):
                     sql = """SELECT * FROM `storages` WHERE `id`='{0}'""".format(storage_id)
                     cursor.execute(sql)
                     result = cursor.fetchone()
-                    result = dict(result)
                     if result:
+                        result = dict(result)
                         return {'id': result.get('id'),
                                 'name': result.get('name'),
                                 'address': result.get('address'),
@@ -187,8 +187,8 @@ async def get_storage(storage_id: int, current_user=Security(get_current_user, s
                     sql = """SELECT * FROM `storages` WHERE `id`='{0}'""".format(storage_id)
                     cursor.execute(sql)
                     result = cursor.fetchone()
-                    result = dict(result)
                     if result:
+                        result = dict(result)
                         return {'id': result.get('id'),
                                 'name': result.get('name'),
                                 'address': result.get('address'),
