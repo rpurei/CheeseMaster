@@ -4,7 +4,7 @@ from typing import Union
 
 
 class ProductionIn(BaseModel):
-    date: datetime.date
+    date: datetime.datetime
     product_id: int
     manufacturer_id: int
     storage_id: int
@@ -17,7 +17,7 @@ class ProductionIn(BaseModel):
 
 class ProductionOut(BaseModel):
     id: int
-    date: datetime.date
+    date: datetime.datetime
     product_id: int
     manufacturer_id: int
     storage_id: int

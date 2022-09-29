@@ -35,8 +35,8 @@ async def get_orders_count(current_user=Security(get_current_user, scopes=['orde
                     if result:
                         result = dict(result)
                         return {
-                            'orders_count': result.get('orders_count')
-                        }
+                                 'orders_count': result.get('orders_count')
+                               }
                     else:
                         return JSONResponse(status_code=404,
                                             content={'detail': f'Orders not found.'}, )
@@ -258,20 +258,20 @@ async def get_orders_content(limit: int = 100000, offset: int = 0,
                         for content in result_content:
                             content = dict(content)
                             dct = {
-                                'id': content.get('id'),
-                                'date': content.get('date'),
-                                'order_id': content.get('order_id'),
-                                'product': get_product_by_id(content.get('product_id')),
-                                'manufacturer': get_manufacturer_by_id(content.get('manufacturer_id')),
-                                'storage': get_storage_by_id(content.get('storage_id')),
-                                'amount': content.get('amount'),
-                                'price': get_price_by_id(content.get('price_id')),
-                                'status': content.get('status'),
-                                'comment': content.get('comment'),
-                                'author_id': content.get('author_id'),
-                                'created': content.get('created'),
-                                'updated': content.get('updated')
-                            }
+                                    'id': content.get('id'),
+                                    'date': content.get('date'),
+                                    'order_id': content.get('order_id'),
+                                    'product': get_product_by_id(content.get('product_id')),
+                                    'manufacturer': get_manufacturer_by_id(content.get('manufacturer_id')),
+                                    'storage': get_storage_by_id(content.get('storage_id')),
+                                    'amount': content.get('amount'),
+                                    'price': get_price_by_id(content.get('price_id')),
+                                    'status': content.get('status'),
+                                    'comment': content.get('comment'),
+                                    'author_id': content.get('author_id'),
+                                    'created': content.get('created'),
+                                    'updated': content.get('updated')
+                                  }
                             content_list.append(dct)
                         record_content['content'] = content_list
                         result_list.append(record_content)

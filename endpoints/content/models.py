@@ -8,7 +8,7 @@ from typing import Union
 
 
 class ContentIn(BaseModel):
-    date: datetime.date
+    date: datetime.datetime
     order_id: int
     product_id: int
     manufacturer_id: int
@@ -21,7 +21,7 @@ class ContentIn(BaseModel):
 
 
 class ContentUpdate(BaseModel):
-    date: datetime.date
+    date: datetime.datetime
     order_id: int
     product_id: int
     manufacturer_id: int
@@ -36,7 +36,7 @@ class ContentUpdate(BaseModel):
 
 class ContentOut(BaseModel):
     id: int
-    date: datetime.date
+    date: datetime.datetime
     order_id: int
     product_id: int
     manufacturer_id: int
@@ -52,7 +52,7 @@ class ContentOut(BaseModel):
 
 class ContentExtendedOut(BaseModel):
     id: int
-    date: datetime.date
+    date: datetime.datetime
     order_id: int
     product: ProductOut
     manufacturer: ManufacturerOut

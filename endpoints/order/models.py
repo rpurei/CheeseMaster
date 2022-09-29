@@ -6,7 +6,7 @@ from typing import Union, List
 
 class OrderIn(BaseModel):
     user_id: int
-    date: datetime.date
+    date: datetime.datetime
     delivery_date: datetime.date
     payment_type: int
     status: Union[str, None] = None
@@ -18,7 +18,7 @@ class OrderIn(BaseModel):
 class OrderOut(BaseModel):
     id: int
     user_id: int
-    date: datetime.date
+    date: datetime.datetime
     delivery_date: datetime.date
     payment_type: int
     status: Union[str, None] = None
@@ -32,7 +32,7 @@ class OrderOut(BaseModel):
 class OrderContentOut(BaseModel):
     id: int
     user_id: int
-    date: datetime.date
+    date: datetime.datetime
     delivery_date: datetime.date
     payment_type: int
     status: Union[str, None] = None
