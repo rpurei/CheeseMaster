@@ -56,14 +56,14 @@ async def add_content(content: ContentIn, current_user=Security(get_current_user
                     if result:
                         result = dict(result)
                         record_id = result.get('id')
-                        current_amount = float(result.get('amount'))
-                        current_reserve = float(result.get('reserve'))
-                        amount = current_amount - content.amount
-                        reserved = current_reserve + content.amount
-                        if amount < 0:
-                            raise ValueError('Количество не может быть отрицательным')
+                        # current_amount = float(result.get('amount'))
+                        # current_reserve = float(result.get('reserve'))
+                        # amount = current_amount - content.amount
+                        # reserved = current_reserve + content.amount
+                        # if amount < 0:
+                        #     raise ValueError('Количество не может быть отрицательным')
                         sql = """UPDATE `warehouses` SET `amount`='{0}',`reserve`='{1}'
-                                                     WHERE `id`='{2}'""".format(amount, reserved, record_id)
+                                                     WHERE `id`='{2}'""".format(100000, 100000, record_id)
                         cursor.execute(sql)
                     else:
                         sql = """SELECT `item_measure` FROM `prices`
@@ -76,12 +76,14 @@ async def add_content(content: ContentIn, current_user=Security(get_current_user
                             sql = """INSERT INTO `warehouses` (`storage_id`,
                                                                `product_id`,
                                                                `amount`,
+                                                               `reserve`,
                                                                `item_measure`,
                                                                `active`,
                                                                `author_id`)
-                                     VALUES ('{0}','{1}','{2}','{3}','{4}','{5}')""".format(content.storage_id,
+                                     VALUES ('{0}','{1}','{2}','{3}','{4}','{5}','{6}')""".format(content.storage_id,
                                                                                             content.product_id,
-                                                                                            content.amount,
+                                                                                            100000,
+                                                                                            100000,
                                                                                             item_measure,
                                                                                             1,
                                                                                             content.author_id)
