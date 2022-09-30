@@ -247,6 +247,7 @@ async def get_orders_content(limit: int = 100000, offset: int = 0,
                                 if result_author:
                                     result_author = dict(result_author)
                                     record_content['author'] = {
+                                                                 'id': result_author.get('id'),
                                                                  'fio': result_author.get('fio'),
                                                                  'email': result_author.get('email'),
                                                                  'phone': result_author.get('phone')
