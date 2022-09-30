@@ -48,47 +48,47 @@ async def add_content(content: ContentIn, current_user=Security(get_current_user
                                          content.status,
                                          content.author_id
                                          ))
-                    # sql = """SELECT `id`,`amount`,`reserve` FROM `warehouses`
-                    #          WHERE `storage_id`='{0}' AND `product_id`='{1}'""".format(content.storage_id,
-                    #                                                                    content.product_id)
-                    # cursor.execute(sql)
-                    # result = cursor.fetchone()
-                    # if result:
-                    #     result = dict(result)
-                    #     record_id = result.get('id')
-                    #     current_amount = float(result.get('amount'))
-                    #     current_reserve = float(result.get('reserve'))
-                    #     amount = current_amount - content.amount
-                    #     reserved = current_reserve + content.amount
-                    #     if amount < 0:
-                    #         raise ValueError('Amount can\'t be negative')
-                    #     sql = """UPDATE `warehouses` SET `amount`='{0}',`reserve`='{1}'
-                    #                                  WHERE `id`='{2}'""".format(amount, reserved, record_id)
-                    #     cursor.execute(sql)
-                    # else:
-                    #     sql = """SELECT `item_measure` FROM `prices`
-                    #              WHERE `id`='{0}'""".format(content.price_id)
-                    #     cursor.execute(sql)
-                    #     result = cursor.fetchone()
-                    #     if result:
-                    #         result = dict(result)
-                    #         item_measure = result.get('item_measure')
-                    #         sql = """INSERT INTO `warehouses` (`storage_id`,
-                    #                                            `product_id`,
-                    #                                            `amount`,
-                    #                                            `item_measure`,
-                    #                                            `active`,
-                    #                                            `author_id`)
-                    #                  VALUES ('{0}','{1}','{2}','{3}','{4}','{5}')""".format(content.storage_id,
-                    #                                                                         content.product_id,
-                    #                                                                         content.amount,
-                    #                                                                         item_measure,
-                    #                                                                         1,
-                    #                                                                         content.author_id)
-                    #         cursor.execute(sql)
-                    #     else:
-                    #         return JSONResponse(status_code=404,
-                    #                             content={"detail": f'Price with ID: {content.price_id} not found.'}, )
+                    sql = """SELECT `id`,`amount`,`reserve` FROM `warehouses`
+                             WHERE `storage_id`='{0}' AND `product_id`='{1}'""".format(content.storage_id,
+                                                                                       content.product_id)
+                    cursor.execute(sql)
+                    result = cursor.fetchone()
+                    if result:
+                        result = dict(result)
+                        record_id = result.get('id')
+                        current_amount = float(result.get('amount'))
+                        current_reserve = float(result.get('reserve'))
+                        amount = current_amount - content.amount
+                        reserved = current_reserve + content.amount
+                        if amount < 0:
+                            raise ValueError('Количество не может быть отрицательным')
+                        sql = """UPDATE `warehouses` SET `amount`='{0}',`reserve`='{1}'
+                                                     WHERE `id`='{2}'""".format(amount, reserved, record_id)
+                        cursor.execute(sql)
+                    else:
+                        sql = """SELECT `item_measure` FROM `prices`
+                                 WHERE `id`='{0}'""".format(content.price_id)
+                        cursor.execute(sql)
+                        result = cursor.fetchone()
+                        if result:
+                            result = dict(result)
+                            item_measure = result.get('item_measure')
+                            sql = """INSERT INTO `warehouses` (`storage_id`,
+                                                               `product_id`,
+                                                               `amount`,
+                                                               `item_measure`,
+                                                               `active`,
+                                                               `author_id`)
+                                     VALUES ('{0}','{1}','{2}','{3}','{4}','{5}')""".format(content.storage_id,
+                                                                                            content.product_id,
+                                                                                            content.amount,
+                                                                                            item_measure,
+                                                                                            1,
+                                                                                            content.author_id)
+                            cursor.execute(sql)
+                        else:
+                            return JSONResponse(status_code=404,
+                                                content={"detail": f'Цена с ID: {content.price_id} не найдена.'}, )
                 except Exception as err:
                     logger.error(f'Error: {str(err)}')
                     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
