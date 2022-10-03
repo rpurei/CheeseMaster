@@ -210,7 +210,7 @@ async def get_orders_content(limit: int = 100000, offset: int = 0,
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = f'SELECT * FROM `orders` LIMIT {limit} OFFSET {offset}'
+                    sql = f'SELECT * FROM `orders` LIMIT {limit} OFFSET {offset} ORDER BY `order_date` DESC'
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     for record in result:
