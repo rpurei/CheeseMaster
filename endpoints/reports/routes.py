@@ -10,6 +10,7 @@ from openpyxl.styles.borders import Border, Side
 from pathlib import Path
 import random
 import string
+from starlette.responses import FileResponse
 
 router = APIRouter(
     prefix='/reports',
@@ -200,9 +201,9 @@ async def get_order_report(current_user=Security(get_current_user, scopes=['orde
                     temp_dir = Path(TEMP_DIR)
                     doc_full_name = temp_dir / temp_file_name
                     book.save(doc_full_name)
-                    doc_base64 = doc_to_base64(str(doc_full_name))
-                    doc_full_name.unlink()
-                    return doc_base64
+                    # doc_base64 = doc_to_base64(str(doc_full_name))
+                    # doc_full_name.unlink()
+                    return FileResponse(doc_full_name, media_type='application/octet-stream', filename='Отчет по заказам.xlsx')
                 except Exception as err:
                     lf = '\n'
                     logger.error(f'{traceback.format_exc().replace(lf, "")} : {str(err)}')
