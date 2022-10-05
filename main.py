@@ -1,8 +1,12 @@
-from config import APP_HOST, APP_PORT
+from config import APP_HOST, APP_PORT, TEMP_DIR
 from endpoints.api import router as api_router
 from fastapi import FastAPI
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
+from pathlib import Path
+
+tmp_dir = Path(TEMP_DIR)
+tmp_dir.mkdir(parents=True, exist_ok=True)
 
 origins = ["*"]
 

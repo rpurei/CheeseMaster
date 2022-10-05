@@ -205,7 +205,7 @@ async def get_productions(current_user=Security(get_current_user, scopes=['produ
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = 'SELECT * FROM `productions`'
+                    sql = 'SELECT * FROM `productions` WHERE storage_id!=0'
                     cursor.execute(sql)
                     result = cursor.fetchall()
                 except Exception as err:
@@ -213,8 +213,10 @@ async def get_productions(current_user=Security(get_current_user, scopes=['produ
                     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
             return result
     except Exception as err:
-        logger.error(f'Error: {str(err)}')
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
+        lf = '\n'
+        logger.error(f'{traceback.format_exc().replace(lf, "")} : {str(err)}')
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail=f'{traceback.format_exc()} : {str(err)}')
 
 
 @router.get('/{production_id}', status_code=status.HTTP_200_OK, response_model=ProductionOut)
