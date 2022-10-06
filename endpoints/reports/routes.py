@@ -214,3 +214,92 @@ async def get_order_report(current_user=Security(get_current_user, scopes=['orde
         logger.error(f'{traceback.format_exc().replace(lf, "")} : {str(err)}')
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f'{traceback.format_exc()} : {str(err)}')
+
+
+@router.get('/order-contents', status_code=status.HTTP_200_OK)
+async def get_order_content_report(current_user=Security(get_current_user, scopes=['order:read']),
+                                   start_date='2000-01-01', end_date='2099-12-31'):
+    try:
+        connection = pymysql.connect(host=DB_HOST,
+                                     user=DB_USER,
+                                     password=DB_PASSWORD,
+                                     database=DB_NAME,
+                                     cursorclass=pymysql.cursors.DictCursor)
+        with connection:
+            with connection.cursor() as cursor:
+                try:
+                    sql = """SELECT orc.order_id,
+                                    orc.date,
+                                    p.name AS product_name,
+                                    c.name AS category_name,
+                                    item_measure AS measure,
+                                    item_price AS price,
+                                    amount,
+                                    ROUND(item_price * amount, 2) AS amount_sum,
+                                    m.name AS manufacturer_name,
+                                    s.name AS storage_name,
+                                    orc.status
+                             FROM `order_contents` orc
+                             LEFT JOIN `products` p ON orc.product_id = p.id
+                             LEFT JOIN `manufacturers` m ON orc.manufacturer_id = m.id
+                             LEFT JOIN `storages` s ON orc.storage_id = s.id
+                             LEFT JOIN `prices` prc ON orc.price_id = prc.id
+                             LEFT JOIN categories c on p.category_id = c.id
+                             WHERE `date` BETWEEN '{0}' AND '{1}'""".format(start_date, end_date)
+                    cursor.execute(sql)
+                    result = cursor.fetchall()
+                    book = xl.Workbook()
+                    sheet = book.active
+                    result = list(result)
+                    start_cell_row = 8
+                    start_cell_col = 4
+                    header_list = ['ИД заказа', 'Дата заказа', 'Продукция', 'Категория', 'Ед.изм', 'Цена', 'Кол-во', 'Сумма', 'Производитель', 'Склад', 'Статус', 'Комментарий']
+                    report_tail = 'за все время'
+                    if start_date != '2000-01-01' and end_date != '2099-12-31':
+                        report_tail = f'за период с {start_date} по {end_date}'
+                    elif start_date == '2000-01-01' and end_date != '2099-12-31':
+                        report_tail = f'за период по {end_date}'
+                    elif start_date != '2000-01-01' and end_date == '2099-12-31':
+                        report_tail = f'за период с {start_date}'
+                    sheet.cell(row=4, column=8).value = f'Отчет по заказанной продукции {report_tail}'
+                    for index_row, row in enumerate(result):
+                        for index_column, column in enumerate(dict(row).values()):
+                            if index_row == 0:
+                                sheet.cell(row=index_row + start_cell_row - 1,
+                                           column=index_column + start_cell_col).value = header_list[index_column]
+                                sheet.cell(row=index_row + start_cell_row - 1,
+                                           column=index_column + start_cell_col).border = thin_border
+                            sheet.cell(row=index_row + start_cell_row,
+                                       column=index_column + start_cell_col).value = column
+                            sheet.cell(row=index_row + start_cell_row,
+                                       column=index_column + start_cell_col).border = thin_border
+                    sheet.column_dimensions['D'].width = 10
+                    sheet.column_dimensions['E'].width = 20
+                    sheet.column_dimensions['F'].width = 30
+                    sheet.column_dimensions['G'].width = 30
+                    sheet.column_dimensions['H'].width = 10
+                    sheet.column_dimensions['I'].width = 10
+                    sheet.column_dimensions['J'].width = 10
+                    sheet.column_dimensions['K'].width = 10
+                    sheet.column_dimensions['L'].width = 30
+                    sheet.column_dimensions['M'].width = 30
+                    sheet.column_dimensions['N'].width = 30
+                    temp_file_name = ''.join(random.choices(string.ascii_lowercase +
+                                                            string.digits,
+                                                            k=TEMP_NAME_LENGTH)) + f'.xlsx'
+                    temp_dir = Path(TEMP_DIR)
+                    doc_full_name = temp_dir / temp_file_name
+                    book.save(doc_full_name)
+                    doc_base64 = doc_to_base64(str(doc_full_name))
+                    # doc_full_name.unlink()
+                    return doc_base64
+                except Exception as err:
+                    lf = '\n'
+                    logger.error(f'{traceback.format_exc().replace(lf, "")} : {str(err)}')
+                    raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                        detail=f'{traceback.format_exc()} : {str(err)}')
+    except Exception as err:
+        lf = '\n'
+        logger.error(f'{traceback.format_exc().replace(lf, "")} : {str(err)}')
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail=f'{traceback.format_exc()} : {str(err)}')
