@@ -291,7 +291,7 @@ async def get_order_content_report(current_user=Security(get_current_user, scope
                     doc_full_name = temp_dir / temp_file_name
                     book.save(doc_full_name)
                     doc_base64 = doc_to_base64(str(doc_full_name))
-                    # doc_full_name.unlink()
+                    doc_full_name.unlink()
                     return doc_base64
                 except Exception as err:
                     lf = '\n'
