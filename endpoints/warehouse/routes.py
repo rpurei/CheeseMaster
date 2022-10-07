@@ -171,7 +171,7 @@ async def get_warehouses(current_user=Security(get_current_user, scopes=['wareho
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
 
 
-@router.get('/{warehouse_id}', status_code=status.HTTP_200_OK, response_model=WarehouseOut)
+@router.get('/{warehouse_id}', status_code=status.HTTP_200_OK)
 async def get_warehouse(warehouse_id: int, current_user=Security(get_current_user, scopes=['warehouse:read'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
@@ -182,22 +182,32 @@ async def get_warehouse(warehouse_id: int, current_user=Security(get_current_use
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = """SELECT * FROM `warehouses` WHERE `id`='{0}'""".format(warehouse_id)
+                    sql = """SELECT s.name AS storage,
+                                    p.name AS product,
+                                    amount,
+                                    item_measure,
+                                    reserve,
+                                    p.updated
+                             FROM `warehouses` w
+                             LEFT JOIN `storages` s ON w.storage_id=s.id
+                             LEFT JOIN `products` p ON w.product_id=p.id
+                             WHERE w.`id`='{0}'""".format(warehouse_id)
                     cursor.execute(sql)
-                    result = cursor.fetchone()
+                    result = cursor.fetchall()
                     if result:
-                        result = dict(result)
-                        return {
-                                    'id': result.get('id'),
-                                    'product_id': result.get('product_id'),
-                                    'amount': result.get('amount'),
-                                    'item_measure': result.get('item_measure'),
-                                    'reserve': result.get('reserve'),
-                                    'active': result.get('active'),
-                                    'author_id': result.get('author_id'),
-                                    'created': result.get('created'),
-                                    'updated': result.get('updated')
-                        }
+                        # return {
+                        #             'id': result.get('id'),
+                        #             'storage': result.get('storage'),
+                        #             'product': result.get('product'),
+                        #             'amount': result.get('amount'),
+                        #             'item_measure': result.get('item_measure'),
+                        #             'reserve': result.get('reserve'),
+                        #             'active': result.get('active'),
+                        #             'author_id': result.get('author_id'),
+                        #             'created': result.get('created'),
+                        #             'updated': result.get('updated')
+                        # }
+                        return result
                     else:
                         return JSONResponse(status_code=404,
                                             content={'detail': f'Warehouse with ID: {warehouse_id} not found.'},)

@@ -14,8 +14,8 @@ class WarehouseIn(BaseModel):
 
 class WarehouseOut(BaseModel):
     id: int
-    product_id: int
-    storage_id: int
+    product: str
+    storage: str
     amount: float
     item_measure: str
     reserve: float
