@@ -148,7 +148,15 @@ async def get_warehouses(current_user=Security(get_current_user, scopes=['wareho
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = 'SELECT * FROM `warehouses`'
+                    sql = """SELECT s.name,
+                                    p.name,
+                                    amount,
+                                    item_measure,
+                                    reserve,
+                                    p.updated
+                             FROM `warehouses` w
+                             LEFT JOIN `storages` s ON w.storage_id=s.id
+                             LEFT JOIN `products` p ON w.product_id=p.id"""
                     cursor.execute(sql)
                     result = cursor.fetchall()
                 except Exception as err:
