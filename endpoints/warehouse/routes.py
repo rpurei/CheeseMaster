@@ -148,8 +148,8 @@ async def get_warehouses(current_user=Security(get_current_user, scopes=['wareho
         with connection:
             with connection.cursor() as cursor:
                 try:
-                    sql = """SELECT s.name,
-                                    p.name,
+                    sql = """SELECT s.name AS storage,
+                                    p.name AS product,
                                     amount,
                                     item_measure,
                                     reserve,
