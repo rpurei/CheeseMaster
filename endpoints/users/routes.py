@@ -293,7 +293,7 @@ async def get_users(limit: int = 100000, offset: int = 0,
 
 
 @router.patch('/{user_id}')
-async def user_edit(user: UserUpdate, current_user=Security(get_current_user, scopes=['user:read'])):
+async def user_edit(user_id: int, user: UserUpdate, current_user=Security(get_current_user, scopes=['user:read'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -302,16 +302,14 @@ async def user_edit(user: UserUpdate, current_user=Security(get_current_user, sc
                                      cursorclass=pymysql.cursors.DictCursor)
         with connection:
             with connection.cursor() as cursor:
-                sql = """SELECT * FROM `users` WHERE `login`='{0}'""".format(current_user)
+                sql = """SELECT * FROM `users` WHERE `id`='{0}'""".format(user_id)
                 cursor.execute(sql)
                 result = cursor.fetchone()
-                result = dict(result)
                 if result:
-                    user_id = result.get('id')
                     sql = """UPDATE `users` SET `role_id`='{0}',
                                                 `phone`='{1}',
                                                 `active`='{2}' 
-                             WHERE `id`={3}""".format(user.role_id,
+                             WHERE `id`='{3}'""".format(user.role_id,
                                                       user.phone,
                                                       user.active,
                                                       user_id)
