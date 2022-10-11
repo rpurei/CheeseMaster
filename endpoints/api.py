@@ -10,6 +10,7 @@ from .warehouse.routes import router as warehouse_router
 from .users.routes import router as user_router
 from .storage.routes import router as storage_router
 from .reports.routes import router as report_router
+from .roles.routes import router as role_router
 from fastapi import APIRouter
 
 router = APIRouter(prefix='/api')
@@ -31,3 +32,4 @@ router.include_router(warehouse_router)
 router.include_router(user_router)
 router.include_router(storage_router)
 router.include_router(report_router)
+router.include_router(role_router)
