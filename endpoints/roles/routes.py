@@ -1,6 +1,5 @@
 from app_logger import logger
 from config import DB_HOST, DB_NAME, DB_USER, DB_PASSWORD
-from .models import WarehouseIn, WarehouseOut
 from ..users.utils import get_current_user
 from fastapi import APIRouter, status, HTTPException, Security
 from fastapi.responses import JSONResponse
