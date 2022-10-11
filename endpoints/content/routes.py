@@ -119,7 +119,7 @@ async def update_content(content: ContentUpdate, content_id: int,
                     sql = 'SELECT `id`,`amount` FROM `order_contents` WHERE `id`={0}'.format(content_id)
                     cursor.execute(sql)
                     result = cursor.fetchone()
-                    logger.info(f'Request: {content}')
+                    # logger.info(f'Request: {content}')
                     if result:
                         result = dict(result)
                         old_amount = float(result.get('amount'))
@@ -155,7 +155,7 @@ async def update_content(content: ContentUpdate, content_id: int,
                     cursor.execute(sql)
                     result = cursor.fetchone()
                     if result:
-                        logger.info('-------------------')
+                        # logger.info('-------------------')
                         result = dict(result)
                         record_id = result.get('id')
                         current_amount = float(result.get('amount'))
@@ -165,20 +165,20 @@ async def update_content(content: ContentUpdate, content_id: int,
                         if content.operation == 1:
                             amount = current_amount - content.amount #- content.amount if old_amount != content.amount else current_amount - content.amount
                             reserved = current_reserve + content.amount #- old_amount if old_amount != content.amount else current_reserve + content.amount
-                            logger.info(
-                                f'Edit operation, current amount: {current_amount}, content amount: {content.amount}, current reserve: {current_reserve} old amount: {old_amount}')
+                            # logger.info(
+                            #     f'Edit operation, current amount: {current_amount}, content amount: {content.amount}, current reserve: {current_reserve} old amount: {old_amount}')
                             if amount < 0:
                                 raise ValueError('Количество не может быть отрицательным')
                         elif content.operation == 2:
                             amount = current_amount
                             reserved = current_reserve - content.amount
-                            logger.info(
-                                f'Issue operation, current amount: {current_amount}, content amount: {content.amount}, current reserve: {current_reserve}')
+                            # logger.info(
+                            #     f'Issue operation, current amount: {current_amount}, content amount: {content.amount}, current reserve: {current_reserve}')
                         elif content.operation == 3:
                             amount = current_amount + content.amount
                             reserved = current_reserve - content.amount
-                            logger.info(
-                                f'Cancel operation, current amount: {current_amount}, content amount: {content.amount}, current reserve: {current_reserve}')
+                            # logger.info(
+                            #     f'Cancel operation, current amount: {current_amount}, content amount: {content.amount}, current reserve: {current_reserve}')
                             if reserved < 0:
                                 raise ValueError('Резерв не может быть отрицательным')
                         if content.operation == 1 or content.operation == 2 or content.operation == 3:
