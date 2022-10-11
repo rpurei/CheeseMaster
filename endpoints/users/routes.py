@@ -178,7 +178,7 @@ async def login(user: User):
 
 
 @router.get('/info', response_model=UserInfo)
-async def info(current_user=Security(get_current_user, scopes=['self:read'])):
+async def get_user_info(current_user=Security(get_current_user, scopes=['self:read'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -227,7 +227,8 @@ async def info(current_user=Security(get_current_user, scopes=['self:read'])):
 
 
 @router.get('/orders')
-async def info(current_user=Security(get_current_user, scopes=['self:read'])):
+async def get_user_orders(limit: int = 100000, offset: int = 0,
+                          current_user=Security(get_current_user, scopes=['self:read'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -242,7 +243,7 @@ async def info(current_user=Security(get_current_user, scopes=['self:read'])):
                 result = dict(result)
                 if result:
                     user_id = result.get('id')
-                    sql = """SELECT * FROM `orders` WHERE `user_id`='{0}'""".format(user_id)
+                    sql = f"""SELECT * FROM `orders` WHERE `user_id`='{user_id}' LIMIT {limit} OFFSET {offset}"""
                     cursor.execute(sql)
                     result = cursor.fetchall()
                     return result
@@ -257,7 +258,8 @@ async def info(current_user=Security(get_current_user, scopes=['self:read'])):
 
 
 @router.get('/')
-async def login(current_user=Security(get_current_user, scopes=['user:read'])):
+async def get_users(limit: int = 100000, offset: int = 0,
+                    current_user=Security(get_current_user, scopes=['user:read'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,
@@ -266,7 +268,19 @@ async def login(current_user=Security(get_current_user, scopes=['user:read'])):
                                      cursorclass=pymysql.cursors.DictCursor)
         with connection:
             with connection.cursor() as cursor:
-                sql = """SELECT * FROM `users`"""
+                sql = f"""SELECT u.id,
+                                 u.login,
+                                 ur.title,
+                                 u.fio,
+                                 u.email,
+                                 u.phone,
+                                 u.active,
+                                 u.auth_source,
+                                 u.created,
+                                 u.updated
+                         FROM `users` u
+                         LEFT JOIN user_roles ur on u.role_id = ur.id
+                         LIMIT {limit} OFFSET {offset}"""
                 cursor.execute(sql)
                 result = cursor.fetchall()
                 return result
