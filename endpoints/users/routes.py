@@ -292,7 +292,7 @@ async def get_users(limit: int = 100000, offset: int = 0,
                             detail=f'{traceback.format_exc()} : {str(err)}')
 
 
-@router.patch('/')
+@router.patch('/{user_id}')
 async def user_edit(user: UserUpdate, current_user=Security(get_current_user, scopes=['user:read'])):
     try:
         connection = pymysql.connect(host=DB_HOST,

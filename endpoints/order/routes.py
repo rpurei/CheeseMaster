@@ -158,7 +158,7 @@ async def delete_order(order_id: int, current_user=Security(get_current_user, sc
                         cursor.execute(sql)
                     else:
                         return JSONResponse(status_code=404,
-                                            content={"detail": f'Order with ID: {order_id} not found.'}, )
+                                            content={"detail": f'Order with ID: {order_id} not found.'})
                 except Exception as err:
                     logger.error(f'Error: {str(err)}')
                     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f'Error {str(err)}')
