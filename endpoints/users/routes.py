@@ -278,7 +278,7 @@ async def login(current_user=Security(get_current_user, scopes=['user:read'])):
 
 
 @router.patch('/')
-async def login(user: UserUpdate, current_user=Security(get_current_user, scopes=['user:read'])):
+async def user_edit(user: UserUpdate, current_user=Security(get_current_user, scopes=['user:read'])):
     try:
         connection = pymysql.connect(host=DB_HOST,
                                      user=DB_USER,

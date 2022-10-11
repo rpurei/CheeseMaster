@@ -109,6 +109,11 @@ def check_access_token(token: str = Depends(oauth2_scheme)):
 
 def get_user(username: str):
     user = ''
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail='User is disabled',
+        headers={'WWW-Authenticate': 'Bearer'},
+    )
     connection = pymysql.connect(host=DB_HOST,
                                  user=DB_USER,
                                  password=DB_PASSWORD,
@@ -121,6 +126,8 @@ def get_user(username: str):
             result = cursor.fetchone()
             result = dict(result)
             user = result.get('login')
+            if result.get('active') != 1:
+                raise credentials_exception
     return user
 
 
