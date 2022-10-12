@@ -1,5 +1,5 @@
 import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Union, List
 
 
@@ -34,3 +34,8 @@ class TokenData(BaseModel):
     name: Union[str, None] = None
     scopes: List[str] = []
 
+
+class MailMessage(BaseModel):
+    address: EmailStr
+    subject: str
+    body: str

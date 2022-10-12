@@ -1,7 +1,9 @@
 from app_logger import logger
-from config import (DB_HOST, DB_NAME, DB_USER, DB_PASSWORD, JWT_EXPIRE_MINUTES, LDAP_SERVER_NAME, LDAP_BIND_USER_NAME,
-                    LDAP_BIND_USER_PASSWORD)
-from .models import User, UserInfo, Token, UserUpdate
+from config import (DB_HOST, DB_NAME, DB_USER, DB_PASSWORD,
+                    JWT_EXPIRE_MINUTES,
+                    LDAP_SERVER_NAME, LDAP_BIND_USER_NAME, LDAP_BIND_USER_PASSWORD,
+                    MAIL_HOST, MAIL_PORT, MAIL_USER, MAIL_PASS)
+from .models import User, UserInfo, Token, UserUpdate, MailMessage
 from .utils import create_access_token, authenticate_user, get_current_user, ldap_register
 from fastapi import APIRouter, status, HTTPException, Depends, Security
 from fastapi.responses import JSONResponse
@@ -9,6 +11,9 @@ import pymysql.cursors
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 import traceback
+import smtplib, ssl
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 
 user_scopes = ['user:read',
@@ -323,3 +328,29 @@ async def user_edit(user_id: int, user: UserUpdate, current_user=Security(get_cu
         logger.error(f'{traceback.format_exc().replace(lf, "")} : {str(err)}')
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail=f'{traceback.format_exc()} : {str(err)}')
+
+
+@router.post('/sendmail')
+async def sendmail(mail_message: MailMessage, current_user=Security(get_current_user, scopes=['user:read'])):
+    context = ssl._create_unverified_context()
+    server = None
+    message = MIMEMultipart('alternative')
+    message['Subject'] = mail_message.subject
+    message['From'] = MAIL_USER
+    message['To'] = mail_message.address
+    part = MIMEText(mail_message.body, "plain")
+    message.attach(part)
+    try:
+        server = smtplib.SMTP(MAIL_HOST, MAIL_PORT)
+        server.ehlo()
+        server.starttls(context=context)
+        server.ehlo()
+        server.login(MAIL_USER, MAIL_PASS)
+        server.sendmail(MAIL_USER, mail_message.address, message.as_string().encode('utf-8'))
+    except Exception as err:
+        lf = '\n'
+        logger.error(f'{traceback.format_exc().replace(lf, "")} : {str(err)}')
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail=f'{traceback.format_exc()} : {str(err)}')
+    finally:
+        server.quit()
