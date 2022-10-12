@@ -3,7 +3,7 @@ from config import (DB_HOST, DB_NAME, DB_USER, DB_PASSWORD,
                     JWT_EXPIRE_MINUTES,
                     LDAP_SERVER_NAME, LDAP_BIND_USER_NAME, LDAP_BIND_USER_PASSWORD,
                     MAIL_HOST, MAIL_PORT, MAIL_USER, MAIL_PASS)
-from .models import User, UserInfo, Token, UserUpdate, MailMessage
+from .models import User, UserInfo, Token, UserUpdate, MailMessage, RequestRoles
 from .utils import create_access_token, authenticate_user, get_current_user, ldap_register
 from fastapi import APIRouter, status, HTTPException, Depends, Security
 from fastapi.responses import JSONResponse
@@ -354,3 +354,50 @@ async def sendmail(mail_message: MailMessage, current_user=Security(get_current_
                             detail=f'{traceback.format_exc()} : {str(err)}')
     finally:
         server.quit()
+
+
+@router.get('/role/{role_name}')
+async def get_admins(role_name: RequestRoles, current_user=Security(get_current_user, scopes=['user:read'])):
+    try:
+        connection = pymysql.connect(host=DB_HOST,
+                                     user=DB_USER,
+                                     password=DB_PASSWORD,
+                                     database=DB_NAME,
+                                     cursorclass=pymysql.cursors.DictCursor)
+        with connection:
+            with connection.cursor() as cursor:
+                if role_name is RequestRoles.admin:
+                    role_name_rus = 'Администратор'
+                elif role_name is RequestRoles.cheesemaster:
+                    role_name_rus = 'Сыровар'
+                sql = f"""SELECT `id` FROM `user_roles` WHERE `title`='{role_name_rus}'"""
+                cursor.execute(sql)
+                result = cursor.fetchone()
+                if result:
+                    result = dict(result)
+                    role_id = result.get('id')
+                    sql = f"""SELECT u.id,
+                                     u.login,
+                                     ur.title,
+                                     u.role_id,
+                                     u.fio,
+                                     u.email,
+                                     u.phone,
+                                     u.active,
+                                     u.auth_source,
+                                     u.created,
+                                     u.updated
+                             FROM `users` u
+                             LEFT JOIN user_roles ur on u.role_id = ur.id
+                             WHERE role_id='{role_id}'"""
+                    cursor.execute(sql)
+                    result = cursor.fetchall()
+                    return result
+                else:
+                    return JSONResponse(status_code=404,
+                                        content={'detail': f'Role Administartor not found'}, )
+    except Exception as err:
+        lf = '\n'
+        logger.error(f'{traceback.format_exc().replace(lf, "")} : {str(err)}')
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail=f'{traceback.format_exc()} : {str(err)}')

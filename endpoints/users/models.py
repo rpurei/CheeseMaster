@@ -1,6 +1,7 @@
 import datetime
 from pydantic import BaseModel, EmailStr
 from typing import Union, List
+from enum import Enum
 
 
 class User(BaseModel):
@@ -39,3 +40,8 @@ class MailMessage(BaseModel):
     address: EmailStr
     subject: str
     body: str
+
+
+class RequestRoles(str, Enum):
+    admin = 'admin'
+    cheesemaster = 'cheesemaster'
