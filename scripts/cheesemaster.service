@@ -1,0 +1,15 @@
+[Unit]
+Description=CheeseMaster
+After=network.target
+
+[Service]
+User=www-data
+WorkingDirectory=/var/www/CheeseMaster/api
+LimitNOFILE=4096
+ExecStart=/var/www/CheeseMaster/api/scripts/server_start.sh
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
+
